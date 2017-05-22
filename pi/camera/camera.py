@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 WIDTH = 480 # width of the screen
 HEIGHT = 800 # height of the screen
-bool buttonHit = False
+buttonHit = False
 
 class App():
     def __init__(self):
@@ -26,9 +26,9 @@ class App():
         self.camera.rotation = 180
 
         # buffers for viewfinder data
-        self.rgb = bytearray(WIDTH * HEIGHT * 3)]
+        self.rgb = bytearray(WIDTH * HEIGHT * 3)
 
-    def save_file(self, filename):
+    # def save_file(self, filename):
 
 
     def display(self):
@@ -36,7 +36,7 @@ class App():
             # self.camera.resolution = (1024, 768)
 
             stream = BytesIO()
-            self.camera.capture(stream, use_video_port = True, format = 'rgb')
+            self.camera.capture(stream, use_video_port=True, format = 'rgb')
             stream.seek(0)
             stream.readinto(self.rgb)
             stream.close()
@@ -72,7 +72,7 @@ class App():
     def wait():
         # Calculate the delay to the start of the next hour
         next_hour = (datetime.now() + timedelta(hour=1)).replace(
-        minute=0, second=0, microsecond=0)
+            minute=0, second=0, microsecond=0)
         delay = (next_hour - datetime.now()).seconds
         sleep(delay)
 
