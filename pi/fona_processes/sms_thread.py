@@ -32,7 +32,7 @@ class SMS_Thread(Thread):
         """
         Thread.__init__(self)
         self.file = open('sms_received.txt', 'w+')
-        self.signal = open('/../message/signal.txt', 'w+')
+        self.signal = open('../message/signal.txt', 'w+')
         self.signal.write('False')
         try:
             self.sms_received = int(self.file.readline())
