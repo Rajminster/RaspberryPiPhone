@@ -14,7 +14,7 @@ class Camera():
     Attributes:
         WIDTH (int): width of the touch screen
         HEIGHT (int): height of the touch screen
-        buttonHit (boolean): boolean flag used whenever a button has been pressed in the UI
+        buttonHit (boolean): flag used whenever a button has been pressed in the UI
     """
 
     WIDTH = 480
