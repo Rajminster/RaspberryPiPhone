@@ -4,6 +4,7 @@
 from serial import Serial
 from sys import exit
 from time import sleep
+from traceback import format_exc
 import RPi.GPIO as gsm
 
 class Fona():
@@ -22,7 +23,7 @@ class Fona():
     """
 
     baud = 9600
-    serialport = Serial('/dev/ttyAMA0', baud, timeout=1)
+    serial_port = Serial('/dev/ttyAMA0', baud, timeout=1)
     channel = 21
 
     @staticmethod
@@ -34,10 +35,10 @@ class Fona():
         """
         gsm.setwarnings(False)
         gsm.setmode(gsm.BCM)
-        gsm.setup(channel, gsm.OUT)
-        gsm.output(channel, gsm.HIGH)
+        gsm.setup(Fona.channel, gsm.OUT)
+        gsm.output(Fona.channel, gsm.HIGH)
         sleep(1)
-        gsm.output(channel, gsm.LOW)
+        gsm.output(Fona.channel, gsm.LOW)
 
     @staticmethod
     def check_connection():
@@ -60,9 +61,9 @@ class Fona():
         Raises:
             IOException if the Raspberry Pi cannot connect to the FONA device
         """
-        """ AT command makes FONA output if connection was successful """
-        send_command('AT\r')
-        output = get_output()
+        """AT command makes FONA output if connection was successful"""
+        Fona.send_command('AT\r')
+        output = Fona.get_output()
         if 'OK' in output:
             print '\n\n***\n*** SUCCESSFUL connecting to FONA\n***\n\n'
         else:
@@ -79,8 +80,7 @@ class Fona():
         Arg:
             data (str): string command. NOTE: commands should end in '\r'.
         """
-        serialport.write(data.encode('utf-8'))
-
+        Fona.serial_port.write(data.encode('utf-8'))
 
     @staticmethod
     def get_output():
@@ -90,7 +90,7 @@ class Fona():
         Returns:
             String of output from the FONA device
         """
-        output = serialport.readlines()
+        output = Fona.serial_port.readlines()
         for i in range(len(output)):
             output[i] = output[i].rstrip()
         return output
@@ -108,9 +108,9 @@ class Fona():
             String of FONA model and revision
         """
         try:
-            check_connection()
-            send_command('ATI\r')
-            return get_output()
+            Fona.check_connection()
+            Fona.send_command('ATI\r')
+            return Fona.get_output()
         except IOException:
             print '\n\n***\n*** FONA Exception\n***\n\n'
             exit(1)
@@ -128,9 +128,9 @@ class Fona():
             String of SIM card number
         """
         try:
-            check_connection()
-            send_command('AT+CCID\r')
-            return get_output()
+            Fona.check_connection()
+            Fona.send_command('AT+CCID\r')
+            return Fona.get_output()
         except IOException:
             print '\n\n***\n*** FONA Exception\n***\n\n'
             exit(1)
@@ -138,4 +138,4 @@ class Fona():
     @staticmethod
     def close():
         """Close the serial port."""
-        serialport.close()
+        Fona.serial_port.close()
