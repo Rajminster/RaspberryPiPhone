@@ -2,10 +2,8 @@
 # camera.py
 
 from io import BytesIO
-from os import environ, remove
+from os import environ
 from picamera import PiCamera
-from subprocess import Popen
-from sys import exit
 from time import sleep
 from datetime import datetime, timedelta
 
