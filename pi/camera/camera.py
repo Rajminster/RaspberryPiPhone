@@ -81,7 +81,6 @@ class Camera():
         # to mode switching on the still port, this will take
         # longer than 6 seconds
         self.camera.capture('dark.jpg')
-        self.close()
 
     def wait():
         """Calculate the delay to the start of the next hour"""
