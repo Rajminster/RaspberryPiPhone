@@ -43,7 +43,7 @@ class Camera():
     def capture(self):
         """Captures image from camera and saves to the Pictures directory."""
         sleep(2) # camera wake up time
-        self.camera.capture('..Pictures/' + self.image_file_name() + '.jpg')
+        self.camera.capture('../Pictures/' + self.image_file_name() + '.jpg')
         """TODO: probably just want to name it after the current date so you don't have to worry about overwritting existing photos"""
 
     def image_file_name(self);
@@ -103,7 +103,7 @@ class Camera():
 
     def record(self):
         # self.camera.resolution = (640, 480)
-        self.camera.start_recording(self.video_file_name() + '.h264')
+        self.camera.start_recording('../Videos/' + self.video_file_name() + '.h264')
         if (buttonHit):
             self.camera.stop_recording()
 
@@ -140,8 +140,8 @@ class Camera():
         self.camera.flash_mode = 'on'
     
     def disable_flash(self):
-		"""Disables the Raspberry Pi's camera flash"""
-		self.camera.flash_mode = 'off'
+	"""Disables the Raspberry Pi's camera flash"""
+	self.camera.flash_mode = 'off'
 
     def close(self):
         """Method called whenever the camera UI is closed. Closes the Raspberry Pi's camera."""
