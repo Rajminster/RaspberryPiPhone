@@ -88,7 +88,7 @@ class Camera():
 
     def timelapse(self):
         self.camera.start_preview()
-        wait()
+        self.wait()
         for file_name in self.camera.capture_continuous('img{timestamp:%Y-%m-%d-%H-%M}.jpg'):
             print('Captured %s' % file_name)
             self.wait()
