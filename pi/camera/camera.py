@@ -51,7 +51,7 @@ class Camera():
         update that.
         
         In order to name photo files from the camera, names are a number
-        followed by the appropriate file extension (IE 1.jpg, 2.jpg, 3.jpg, ...)
+        followed by the appropriate file extension (1.jpg, 2.jpg, 3.jpg, ...)
         Returns string of the file name of the next image to be saved.
         """
         f = open('photo_index.txt', 'w+')
@@ -61,7 +61,7 @@ class Camera():
             f.close()
             return str(index)
         except ValueError:
-            """ empty file """
+            """empty file"""
             f.write('1')
             f.close()
             return '0'
@@ -71,7 +71,7 @@ class Camera():
         update that.
         
         In order to name video files from the camera, names are a number
-        followed by the appropriate file extension (IE 1.jpg, 2.jpg, 3.jpg, ...)
+        followed by the appropriate file extension (1.jpg, 2.jpg, 3.jpg, ...)
         Returns string of the file name of the next video to be saved.
         """
         f = open('video_index.txt', 'w+')
@@ -81,13 +81,13 @@ class Camera():
             f.close()
             return str(index)
         except ValueError:
-            """ empty file """
+            """empty file"""
             f.write('1')
             f.close()
             return '0'
 
     def display(self):
-        """Method to display on the screen what the camera "sees"."""
+        """Method to display on the screen what the camera 'sees'"""
         while True:
             # self.camera.resolution = (1024, 768)
             """Buffer for screen color data"""
