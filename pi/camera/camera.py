@@ -23,13 +23,13 @@ class Camera():
     buttonHit = False
     
     def __init__(self):
-		"""Constructor for Camera object.
-		
-		Sets environment for screen to SPI, configures PiCamera object.
-		
-		Attribute:
-			camera (picamera.PiCamera): PiCamera object for this class to interact with
-		"""
+        """Constructor for Camera object.
+
+        Sets environment for screen to SPI, configures PiCamera object.
+
+        Attribute:
+            camera (picamera.PiCamera): PiCamera object for this class to interact with
+        """
         """Set screen to SPI"""
         environ['SDL_FDBEV'] = '/dev/fb1'
         environ['SDL_MOUSEDEV'] = '/dev/input/touchscreen'
