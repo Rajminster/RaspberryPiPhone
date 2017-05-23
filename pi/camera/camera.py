@@ -40,7 +40,8 @@ class App():
             stream.seek(0)
             stream.readinto(self.rgb)
             stream.close()
-            image = pygame.image.frombuffer(self.rgb[0:(WIDTH * HEIGHT * 3)], (WIDTH, HEIGHT), 'RGB')
+            image = pygame.image.frombuffer(self.rgb[0:(WIDTH * HEIGHT *
+                3)], (WIDTH, HEIGHT), 'RGB')
             self.screen.blit(image, (0, 0))
             pygame.display.update()
 
@@ -49,15 +50,15 @@ class App():
         self.camera.start_recording('my_video.h264')
         if (buttonHit):
             self.camera.stop_recording()
-        close(self)
-
+        # close(self)
+        display(self)
 
     def lowLightImage(self):
         # camera.resolution = (1280, 720)
         # Set a framerate of 1/6fps, then set shutter
         # speed to 6s and ISO to 800
-        self.camera.framerate = Fraction(1, 6)
-        self.camera.shutter_speed = 6000000
+        self.camera.framerate = Fraction(1, 1)
+        self.camera.shutter_speed = 1000000
         self.camera.exposure_mode = 'off'
         self.camera.iso = 800
         # Give the camera a good long time to measure AWB
@@ -67,14 +68,14 @@ class App():
         # to mode switching on the still port, this will take
         # longer than 6 seconds
         self.camera.capture('dark.jpg')
-        close(self)
-
+        # lose(self)
+        display(self)
     def wait():
         # Calculate the delay to the start of the next hour
         next_hour = (datetime.now() + timedelta(hour=1)).replace(
             minute=0, second=0, microsecond=0)
         delay = (next_hour - datetime.now()).seconds
-        sleep(delay)
+        # sleep(delay)
 
     def timelapse(self):
 
@@ -84,19 +85,21 @@ class App():
         for filename in self.camera.capture_continuous('img{timestamp:%Y-%m-%d-%H-%M}.jpg'):
             print('Captured %s' % filename)
             wait()
-        close(self)
-
+        # close(self)
+        display(self)
     def image(self):
         self.camera.start_preview()
         # Camera warm-up time
         sleep(2)
         self.camera.capture('foo.jpg')
-        close(self)
+        # close(self)
+        display(self)
 
     def flash(self):
         self.camera.flash_mode = 'on'
         self.camera.capture('whatever.jpg')
-        close(self)
+        #close(self)
+        display(self)
 
 
     def close(self):
