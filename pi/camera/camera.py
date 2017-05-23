@@ -19,8 +19,8 @@ class Camera():
         buttonHit (boolean): boolean flag used whenever a button has been pressed in the UI
     """
 
-    WIDTH = 480 # width of the screen
-    HEIGHT = 800 # height of the screen
+    WIDTH = 480
+    HEIGHT = 800
     buttonHit = False
     
     def __init__(self):
