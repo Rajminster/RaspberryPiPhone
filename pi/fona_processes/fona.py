@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # fona.py
 
 from serial import Serial
@@ -6,6 +6,10 @@ from sys import exit
 from time import sleep
 from traceback import format_exc
 import RPi.GPIO as gsm
+
+__author__ = "Nikola Istvanic"
+__date__ = "2017-05-24"
+__version__ = "1.0"
 
 class Fona():
     """Class to interact with FONA 2G GSM chip.
