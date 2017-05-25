@@ -5,48 +5,31 @@ from serial import Serial
 from sys import exit
 from time import sleep
 from traceback import format_exc
-import RPi.GPIO as gsm
 
 __author__ = "Nikola Istvanic"
 __date__ = "2017-05-24"
 __version__ = "1.0"
 
 class Fona():
-    """Class to interact with FONA 2G GSM chip.
-
-    Contains methods for powering GSM, checking if a successful connection can
-    be established with the FONA device, sending commands (see README.md) to the
-    device, checking the output of the device after commands, methods for basic
+    """Class to interact with FONA 2G device.
+    
+    Contains methods for interacting with the FONA device: checking if a successful
+    connection can be established with the FONA device, sending commands (see README.md)
+    to the device, checking the output of the device after commands, methods for basic
     commands such as checking FONA model and revision.
 
     Attributes:
-        baud (int): baud rate for this device
-        serialport (serial.Serial): serial port for communication between
-        Raspberry Pi and FONA chip
-        channel (int): pin number which FONA and GSM connect
+        baud (int): baud rate for FONA device
+        fona_port (serial.Serial): serial port for communication between Raspberry Pi
+        and FONA device
     """
 
     baud = 9600
-    serial_port = Serial('/dev/ttyAMA0', baud, timeout=1)
-    channel = 21
-
-    @staticmethod
-    def power_gsm():
-        """Powers GSM connected to the pin whose value is in the channel variable.
-
-        Raspberry Pi's built in GPIO library can be used to write logical HIGH and
-        LOW to the channel the GSM is connected to in order to turn it on.
-        """
-        gsm.setwarnings(False)
-        gsm.setmode(gsm.BCM)
-        gsm.setup(Fona.channel, gsm.OUT)
-        gsm.output(Fona.channel, gsm.HIGH)
-        sleep(1)
-        gsm.output(Fona.channel, gsm.LOW)
+    fona_port = Serial('/dev/ttyUSB0', baud, timeout=1)
 
     @staticmethod
     def check_connection():
-        """Checks if the FONA 2G GSM chip can be connected to successfully.
+        """Checks if the FONA 2G device can be connected to successfully.
 
         If connecting is successful, this method outputs to the console that
         connection was SUCCESSFUL; otherwise, this method outputs to the console
@@ -63,16 +46,16 @@ class Fona():
         in this class.
 
         Raises:
-            IOException if the Raspberry Pi cannot connect to the FONA device
+            IOError if the Raspberry Pi cannot connect to the FONA device
         """
         """AT command makes FONA output if connection was successful"""
-        Fona.send_command('AT\r')
+        Fona.send_command('AT')
         output = Fona.get_output()
         if 'OK' in output:
             print '\n\n***\n*** SUCCESSFUL connecting to FONA\n***\n\n'
         else:
             print '\n\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n\n'
-            raise IOException('Unable connecting to FONA 2G GSM')
+            raise IOError('\n\n***\n*** Unable connecting to FONA 2G device\n***')
     
     @staticmethod
     def send_command(data):
@@ -82,9 +65,10 @@ class Fona():
             https://pythonhosted.org/pyserial/pyserial_api.html
 
         Arg:
-            data (str): string command. NOTE: commands should end in '\r'.
+            data (str): string command. NOTE: \r is appended to commands
         """
-        Fona.serial_port.write(data.encode('utf-8'))
+        data += '\r'
+        Fona.fona_port.write(data.encode('utf-8'))
 
     @staticmethod
     def get_output():
@@ -94,7 +78,7 @@ class Fona():
         Returns:
             String of output from the FONA device
         """
-        output = Fona.serial_port.readlines()
+        output = Fona.fona_port.readlines()
         for i in range(len(output)):
             output[i] = output[i].rstrip()
         return output
@@ -113,9 +97,9 @@ class Fona():
         """
         try:
             Fona.check_connection()
-            Fona.send_command('ATI\r')
+            Fona.send_command('ATI')
             return Fona.get_output()
-        except IOException:
+        except IOError:
             print '\n\n***\n*** FONA Exception\n***\n\n'
             exit(1)
 
@@ -133,13 +117,60 @@ class Fona():
         """
         try:
             Fona.check_connection()
-            Fona.send_command('AT+CCID\r')
+            Fona.send_command('AT+CCID')
             return Fona.get_output()
-        except IOException:
+        except IOError:
             print '\n\n***\n*** FONA Exception\n***\n\n'
+            exit(1)
+    
+    @staticmethod
+    def get_reception():
+        """Send AT+CSQ command to output the reception of the FONA
+
+        First checks if there is a successful connection. If so, the command for
+        outputting reception is sent, and the output of the FONA is then returned;
+        if a successful connection was not obtained, the method exits with
+        EXIT_FAILURE.
+
+        Returns:
+            String of reception
+        """
+        try:
+            Fona.check_connection()
+            sleep(1)
+            Fona.send_command('AT+CSQ')
+            return Fona.get_output()
+        except IOError:
+            print '\n\n***\n*** FONA Error\n***\n\n'
+            exit(1)
+        
+    @staticmethod
+    def get_carrier_name():
+        """Send AT+CSPN command to output the name of the carrier
+
+        First checks if there is a successful connection. If so, the command for
+        outputting carrier name is sent, and the output of the FONA is then returned;
+        if a successful connection was not obtained, the method exits with
+        EXIT_FAILURE. If there is no carrier, this method returns 'ERROR' string.
+
+        Returns:
+            String of carrier name
+        """
+        try:
+            Fona.check_connection()
+            sleep(1)
+            Fona.send_command('AT+CSPN')
+            output = Fona.get_output()
+            """
+            if 'ERROR' in output:
+                raise NoCarrierException('\n\n***\n*** No carrier detected by FONA device\n***')
+            """
+            return output
+        except IOError:
+            print '\n\n***\n*** FONA Error\n***\n\n'
             exit(1)
 
     @staticmethod
     def close():
         """Close the serial port."""
-        Fona.serial_port.close()
+        Fona.fona_port.close()
