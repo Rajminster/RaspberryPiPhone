@@ -47,17 +47,6 @@ sm = ScreenManager()
 sm.add_widget(CameraScreen(name='camera'))
 sm.add_widget(RecordScreen(name='record'))
 
-
-
-
-
-
-
-
-
-
-
-
 class UI():
     # circle = ObjectProperty(None)
     # def __init__(self):
