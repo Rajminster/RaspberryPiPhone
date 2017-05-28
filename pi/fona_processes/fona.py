@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 from serial import Serial
-from sys import exit
-from traceback import format_exc
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-24'
@@ -13,11 +11,8 @@ __version__ = '1.0'
 Library applies to 2G FONA UFL GSM US Edition SIM800 Series only. This library
 is used for sending commands (see README.md) to the FONA device in order to
 execute its predefined instructions (see: https://cdn-shop.adafruit.com/product-
-files/1946/SIM800+Series_AT+Command+Manual_V1.09.pdf). It contains methods which
-simplify communicating with the FONA device: checking if a successful connection
-can be established with the FONA device, sending commands to the device,
-checking the output of the device after commands, methods for basic commands
-such as checking FONA model and revision, etc.
+files/1946/SIM800+Series_AT+Command+Manual_V1.09.pdf). It contains basic methods
+for writing to and receiving output from the FONA device.
 
 In order to execute these instructions, the commands must be written to the FONA
 device through a serial port; this is done in the _send_command method which is
@@ -58,12 +53,18 @@ def _send_command(data):
     Since this library should be used in a multithreaded operating system, the
     invariant for this method is that the parent method calling this helper
     should have the thread lock for writing to the FONA device serial port.
+    
+    NOTE: allow for Raspberry Pi to sleep for at least 0.2 seconds between calls
+    of this method to allow for complete write of the data parameter. Without a
+    time.sleep(0.2) between calls, data is written to the serial port too fast
+    for the FONA to output to.
 
     Arg:
         data (str): string command. NOTE: \r is appended to commands
     """
     data += '\r'
     fona_port.write(data.encode('utf-8'))
+    sleep(0.2)
 
 def _send_end_signal():
     """Send the signal for CTRL-Z to the FONA device serial port.
@@ -96,98 +97,6 @@ def _get_output():
         output[i] = output[i].rstrip()
     return output
 
-def check_connection():
-    """Checks if the FONA 2G device can be connected to successfully.
-
-    This is accomplished by sending the AT command to the FONA device serial
-    port. Whenever this command is sent, 'OK' will be outputted to the serial
-    port if there is a successful connection.
-
-    If connecting to the FONA device is unsuccessful, the FONA device will not
-    output OK after which this method will raise an IOError which signals to the
-    caller that there was not a successful connection. This method should be
-    called first in any series of methods that interact with the FONA device to
-    initially ensure a proper connection exists.
-
-    Raises:
-        IOError if the Raspberry Pi cannot connect to the FONA device
-    """
-    _send_command('AT')
-    output = _get_output()
-    if 'OK' in output:
-        print '\n***\n*** SUCCESSFUL connecting to FONA\n***\n'
-    else:
-        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n'
-        raise IOError('\n***\n*** Unable connecting to FONA\n***\n')
-
-def get_model():
-    """Send ATI command to output the FONA identification information.
-
-    This method first checks if there is a successful connection between the
-    Raspberry Pi and the FONA device. If so, the command for outputting FONA
-    identification information is sent, and the output of the FONA
-    is then returned; if a successful connection was not obtained, the
-    method raises the IOError to the caller.
-
-    Returns:
-        String of FONA model and revision
-    """
-    check_connection()
-    _send_command('ATI')
-    return _get_output()
-
-def get_simcard_number():
-    """Send AT+CCID command to output the SIM card identifier (outputs
-    Integrated Circuit Card ID (CCID)).
-
-    First checks if there is a successful connection. If so, the command for
-    outputting SIM card number is sent, and the output of the FONA
-    is then returned; if a successful connection was not obtained, the
-    method raises the IOError to the caller.
-
-    Returns:
-        String of SIM card identifier
-    """
-    check_connection()
-    _send_command('AT+CCID')
-    return _get_output()
-
-def get_reception():
-    """Send AT+CSQ command to output the reception of the FONA
-
-    First checks if there is a successful connection. If so, the command for
-    outputting reception is sent, and the output of the FONA is then returned.
-    The output of the FONA device after sending this command should be in the
-    format:
-        ['AT+CSQ', '+CSQ: X,0', '', 'OK']
-    where the X determines the strength of the reception: a higher number means
-    a stronger reception. If a successful connection was not obtained, the
-    method raises the IOError to the caller.
-
-    Returns:
-        String of reception
-    """
-    check_connection()
-    _send_command('AT+CSQ')
-    return _get_output()
-    
-def get_carrier_name():
-    """Send AT+CSPN command to output the name of the carrier.
-
-    First checks if there is a successful connection. If so, the command for
-    outputting carrier name is sent, and the output of the FONA is then
-    returned. If using a non-major carrier, it is possible for this method to
-    return a string array which contains the string ERROR. If this is the case,
-    this error string should be disregarded. If a successful connection was not
-    obtained, the method raises the IOError to the caller.
-
-    Returns:
-        String of carrier name
-    """
-    check_connection()
-    _send_command('AT+CSPN')
-    return _get_output()
-
 def close():
-    """Close the serial port for the FONA device."""
+    """Close the serial port."""
     fona_port.close()
