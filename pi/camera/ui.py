@@ -2,11 +2,11 @@ from kivy.uix.button import Button as b
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.gesture import Gesture, GestureDatabase
 from kivy.lang import Builder
-from camera.py import Camera
+#from camera.py import Camera
 
 # builds a camera
 
-cmra = Camera()
+#cmra = Camera()
 
 
 # builds the screens using Builder and screenmanager as a pseudo-kv file
