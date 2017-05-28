@@ -64,7 +64,6 @@ def _send_command(data):
     """
     data += '\r'
     fona_port.write(data.encode('utf-8'))
-    sleep(0.2)
 
 def _send_end_signal():
     """Send the signal for CTRL-Z to the FONA device serial port.
