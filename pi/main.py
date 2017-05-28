@@ -1,4 +1,5 @@
 import kivy
+from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 
@@ -9,11 +10,12 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 
 
-class HomeScreen(App):
+class HomeScreenApp(App):
     def build(self):
+        #self.load_kv('Launcher.kv')
         return BoxLayout()
 
 
 if __name__ == '__main__':
-    home = HomeScreen()
+    home = HomeScreenApp()
     home.run()
