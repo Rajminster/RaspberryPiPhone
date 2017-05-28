@@ -9,17 +9,14 @@ __version__ = '1.0'
 
 def check_connection():
     """Checks if the FONA 2G device can be connected to successfully.
-
     This is accomplished by sending the AT command to the FONA device serial
     port. Whenever this command is sent, 'OK' will be outputted to the serial
     port if there is a successful connection.
-
     If connecting to the FONA device is unsuccessful, the FONA device will not
     output OK after which this method will raise an IOError which signals to the
     caller that there was not a successful connection. This method should be
     called first in any series of methods that interact with the FONA device to
     initially ensure a proper connection exists.
-
     Raises:
         IOError if the Raspberry Pi cannot connect to the FONA device
     """
@@ -33,13 +30,11 @@ def check_connection():
 
 def get_model():
     """Send ATI command to output the FONA identification information.
-
     This method first checks if there is a successful connection between the
     Raspberry Pi and the FONA device. If so, the command for outputting FONA
     identification information is sent, and the output of the FONA
     is then returned; if a successful connection was not obtained, the
     method raises the IOError to the caller.
-
     Returns:
         String of FONA model and revision
     """
@@ -51,12 +46,10 @@ def get_model():
 def get_simcard_number():
     """Send AT+CCID command to output the SIM card identifier (outputs
     Integrated Circuit Card ID (CCID)).
-
     First checks if there is a successful connection. If so, the command for
     outputting SIM card number is sent, and the output of the FONA
     is then returned; if a successful connection was not obtained, the
     method raises the IOError to the caller.
-
     Returns:
         String of SIM card identifier
     """
@@ -67,7 +60,6 @@ def get_simcard_number():
 
 def get_reception():
     """Send AT+CSQ command to output the reception of the FONA
-
     First checks if there is a successful connection. If so, the command for
     outputting reception is sent, and the output of the FONA is then returned.
     The output of the FONA device after sending this command should be in the
@@ -76,7 +68,6 @@ def get_reception():
     where the X determines the strength of the reception: a higher number means
     a stronger reception. If a successful connection was not obtained, the
     method raises the IOError to the caller.
-
     Returns:
         String of reception
     """
@@ -87,14 +78,12 @@ def get_reception():
     
 def get_carrier_name():
     """Send AT+CSPN command to output the name of the carrier.
-
     First checks if there is a successful connection. If so, the command for
     outputting carrier name is sent, and the output of the FONA is then
     returned. If using a non-major carrier, it is possible for this method to
     return a string array which contains the string ERROR. If this is the case,
     this error string should be disregarded. If a successful connection was not
     obtained, the method raises the IOError to the caller.
-
     Returns:
         String of carrier name
     """
@@ -103,20 +92,33 @@ def get_carrier_name():
     _send_command('AT+CSPN')
     return _get_output()
 
-if __name__ == '__main__':
-    try:
-        print get_carrier_name()
-        print 'Sending text...'
-        _send_command('AT+CMGF=1')
-        sleep(0.2)
-        _send_command('AT+CMGS="14127360806"')
-        sleep(0.2)
-        _send_command('Hello world!')
-        sleep(0.2)
-        _send_end_signal() # chr(26) is the character for CTRL-Z which is needed to end sending the message
-        print 'Text sent'
-    except:
-        print 'ERROR'
-        error = format_exc()
-        error_log = open('/home/pi/logs/fona.log', 'w')
-        error_log.write(error)
+def send_message(number, message):
+    """Send an SMS to the phone number which is given by the string parameter
+    number.
+    
+    To send an SMS, first the connection with the FONA is checked. If
+    successful, the AT command for changing the message type (AT+CMGF) is
+    written to the FONA device. When entering this command in the FONA terminal,
+    this allows the text directly typed in the terminal to be used as the
+    message to be sent. The command for setting the phone number to be texted is
+    written, using the number parameter, followed by writing the message to the
+    FONA device. Finally the CTRL-Z signal is sent, sending the message to the
+    desired recipient.
+
+    Between each call to _send_command there are calls to time.sleep(0.2) which
+    is needed to ensure that the previous _send has enough time to write to the
+    FONA device before any other writes occur.
+
+    Args:
+        number (str): string of the phone number to send the message to
+        message (str): the message to be sent to the phone number
+    """
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CMGF=1')
+    sleep(0.2)
+    _send_command('AT+CMGS="' + number + '"')
+    sleep(0.2)
+    _send_command(message)
+    sleep(0.2)
+    _send_end_signal()
