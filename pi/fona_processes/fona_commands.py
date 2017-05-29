@@ -2,6 +2,7 @@
 
 from fona import _get_output, _send_command, _send_end_signal
 from time import sleep
+from traceback import format_exc
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-28'
@@ -21,8 +22,7 @@ def check_connection():
         IOError if the Raspberry Pi cannot connect to the FONA device
     """
     _send_command('AT')
-    output = _get_output()
-    if 'OK' in output:
+    if 'OK' in _get_output():
         print '\n***\n*** SUCCESSFUL connecting to FONA\n***\n'
     else:
         print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n'
@@ -92,6 +92,12 @@ def get_carrier_name():
     _send_command('AT+CSPN')
     return _get_output()
 
+def get_battery():
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CBC')
+    return _get_output()
+
 def send_message(number, message):
     """Send an SMS to the phone number which is given by the string parameter
     number.
@@ -122,3 +128,145 @@ def send_message(number, message):
     _send_command(message)
     sleep(0.2)
     _send_end_signal()
+
+def message_received():
+    """Determines if any new messages have been sent to the FONA device.
+
+    To determine if any new message has been received, this method first checks
+    FONA connection. If successful, it writes to the FONA serial port the AT
+    command which outputs the number of total messages received. The _get_output
+    method will return a string array whose second index contains the number of
+    received messages.
+
+    This value is the total number of messages received, according to the FONA
+    device; however, it is not the total number of messages accounted for (or
+    recorded). To save the number of messages accounted for (non-new), we save
+    the current value of messages received to a file (if it's greater than the
+    number of recorded messages). Initially, this file will be empty, so the
+    value for this variable is assumed to be zero.
+
+    At any point in calling this method, the number of messages received will
+    always be greater than or equal to the number of messages recorded. If the
+    number of messages received by the FONA is greater than the number of
+    messages recorded, then new messages have been received. This is why the
+    max of number of messages received and number recorded is the new value for
+    number of messages recorded.
+
+    This method returns the difference between number of messages received by
+    the FONA and number of messages recorded. If no new messages have been
+    received, the number of messages received and the number of messages
+    recorded will be equal, meaning this method will return zero to indicate no
+    new messages; otherwise this method will return the number of new messages.
+
+    Returns:
+        If any new messages have been received, this method returns non zero
+        (the number of new messages unaccounted for); otherwise it returns zero.
+    """
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CPMS?')
+    sms_received = int(_get_output()[1].split(',')[1])
+    f = open('sms_record.txt', 'r')
+    try:
+        sms_recorded = int(f.readline())
+    except ValueError:
+        """empty file"""
+        sms_recorded = 0
+    f = open('sms_record.txt', 'w+')
+    f.write(str(max(sms_received, sms_recorded)))
+    return sms_received - sms_recorded
+
+def parse_message(output):
+    """Returns only the message payload of the ith message received based on
+    its output.
+    """
+    message = ""
+    for i in range(2 , len(output) - 2):
+        message += output[i] + '\n'
+    return message[:-1]
+
+def get_all_sms():
+    """Returns array of (number, timestamp, message) tuples for all messages received.
+    
+    In order to get received messages, first the command for outputting the
+    number of total messages received is written to the FONA port, and the
+    output is saved. 
+    """
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CMGF=1') # display message in output
+    sleep(0.2)
+    _send_command('AT+CSDH=1') # detailed SMS output
+    sleep(0.2)
+    _send_command('AT+CPMS?')
+    num = int(_get_output()[5].split(',')[1]) # 5 because other commands were entered
+    messages = {'number':[], 'timestamp': [], 'message': []}
+    for i in range(1, num + 1):
+        sleep(0.2)
+        _send_command('AT+CMGR=' + str(i))
+        output = _get_output()
+        messages['number'].append(output[1].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[1].split('"')[7])
+        messages['message'].append(parse_message(output))
+    return messages
+
+def get_new_sms():
+    num_new = message_received()
+    sleep(0.2)
+    _send_command('AT+CMGF=1') # display message in output
+    sleep(0.2)
+    _send_command('AT+CSDH=1') # detailed SMS output
+    sleep(0.2)
+    _send_command('AT+CPMS?')
+    num = int(_get_output()[5].split(',')[1]) # 5 because other commands were entered
+    messages = {'number':[], 'timestamp': [], 'message': []}
+    for i in range(num - num_new + 1, num + 1):
+        sleep(0.2)
+        _send_command('AT+CMGR=' + str(i))
+        output = _get_output()
+        messages['number'].append(output[1].split('"')[3].replace('+', ''))
+        messages['timestamp'].append(output[1].split('"')[7])
+        messages['message'].append(parse_message(output))
+    return messages
+
+def get_n_newest_sms(n):
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CPMS?')
+    num = int(_get_output()[1].split(',')[1]) # 1 because other command was entered
+    if n > num or n < 1:
+        raise ValueError('\n***\n*** Out of range value for n\n***\n')
+    sleep(0.2)
+    _send_command('AT+CMGF=1') # display message in output
+    sleep(0.2)
+    _send_command('AT+CSDH=1') # detailed SMS output
+    messages = {'number':[], 'timestamp': [], 'message': []}
+    for i in range(num - n + 1, num + 1):
+        sleep(0.2)
+        _send_command('AT+CMGR=' + str(i))
+        output = _get_output()
+        messages['number'].append(output[1].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[1].split('"')[7])
+        messages['message'].append(parse_message(output))
+    return messages
+
+def get_n_oldest_sms(n):
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CPMS?')
+    num = int(_get_output()[1].split(',')[1]) # 1 because other command was entered
+    if n > num or n < 1:
+        raise ValueError('\n***\n*** Out of range value for n\n***\n')
+    sleep(0.2)
+    _send_command('AT+CMGF=1') # display message in output
+    sleep(0.2)
+    _send_command('AT+CSDH=1') # detailed SMS output
+    messages = {'number':[], 'timestamp': [], 'message': []}
+    for i in range(1, n + 1):
+        sleep(0.2)
+        _send_command('AT+CMGR=' + str(i))
+        output = _get_output()
+        messages['number'].append(output[1].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[1].split('"')[7])
+        messages['message'].append(parse_message(output))
+    return messages
