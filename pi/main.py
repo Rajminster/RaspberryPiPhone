@@ -12,7 +12,6 @@ from kivy.uix.label import Label
 
 class HomeScreenApp(App):
     def build(self):
-        #self.load_kv('Launcher.kv')
         return BoxLayout()
 
 
