@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/gallery/gallery.kv" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/pi/gallery/contacts.kv" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/gallery/gallery.py" afterPath="$PROJECT_DIR$/pi/gallery/gallery.py" />
     </list>
     <ignored path="RaspberryPiPhone.iws" />
@@ -41,31 +38,11 @@
       <file leaf-file-name="gallery.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="21" column="27" selection-start-line="21" selection-start-column="27" selection-end-line="21" selection-end-column="27" />
+            <state relative-caret-position="726">
+              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="34" selection-end-column="32" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="gallery.kv" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.kv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HomeScreen.kv" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pi/HomeScreen.kv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="15" selection-end-column="27" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -741,8 +718,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="21" column="27" selection-start-line="21" selection-start-column="27" selection-end-line="21" selection-end-column="27" />
+        <state relative-caret-position="726">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="34" selection-end-column="32" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
