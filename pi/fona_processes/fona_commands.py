@@ -207,7 +207,7 @@ def message_received():
     f.write(str(max(sms_received, sms_recorded)))
     return sms_received - sms_recorded
 
-def parse_message(output):
+def parse_message(prev_commands, output):
     """Parses the message payload from the FONA device output after sending it
     its command for outputting the full details of an SMS received.
 
@@ -217,10 +217,13 @@ def parse_message(output):
         ['AT+CMGF=1', 'OK', 'AT+CSDH=1', 'OK', 'AT+CMGR=2', '+CMGR: "REC READ",
         "+14127360806","","17/05/28,14:33:14-16",145,4,0,0,"+12063130055",
         145,5', 'Hello', '', 'OK']
-    where elements are indicated by single quotes. 
+    where elements are indicated by single quotes. In this case, two commands
+    are written before this method is called, so the output regarding the SMS
+    begins at index 5 (beginning with '+CMGR:'); therefore the value for
+    prev_commands is 2. 
     """
     message = ""
-    for i in range(2 , len(output) - 2):
+    for i in range(prev_commands * 2 , len(output) - 2):
         message += output[i] + '\n'
     return message[:-1]
 
@@ -246,7 +249,7 @@ def get_all_sms():
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(parse_message(1, output))
     return messages
 
 def get_new_sms():
@@ -265,7 +268,7 @@ def get_new_sms():
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+', ''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(parse_message(1, output))
     return messages
 
 def get_n_newest_sms(n):
@@ -286,7 +289,7 @@ def get_n_newest_sms(n):
         output = _get_output()
         messages['number'].append(output[5].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[5].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(parse_message(3, output))
     return messages
 
 def get_n_oldest_sms(n):
@@ -307,5 +310,5 @@ def get_n_oldest_sms(n):
         output = _get_output()
         messages['number'].append(output[5].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[5].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(parse_message(3, output))
     return messages
