@@ -8,8 +8,21 @@ __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-28'
 __version__ = '1.0'
 
+"""General Purpose Library for 2G FONA Device.
+
+Using the methods defined in fona.py, this library allows for full use of the
+FONA device by sending specific commands to perform tasks such as receive SMS,
+send SMS, check FONA battery percentage, etc.
+
+NOTE: whenever calling the fona._send_command method, it is necessary to call
+time.sleep(0.2) after in order to ensure that the command being sent will be
+written completely. Without waiting, the serial port may be written to too
+frequently, resulting in incomplete command entries and unintended output/error.
+"""
+
 def check_connection():
     """Checks if the FONA 2G device can be connected to successfully.
+
     This is accomplished by sending the AT command to the FONA device serial
     port. Whenever this command is sent, 'OK' will be outputted to the serial
     port if there is a successful connection.
@@ -18,6 +31,7 @@ def check_connection():
     caller that there was not a successful connection. This method should be
     called first in any series of methods that interact with the FONA device to
     initially ensure a proper connection exists.
+
     Raises:
         IOError if the Raspberry Pi cannot connect to the FONA device
     """
@@ -30,11 +44,13 @@ def check_connection():
 
 def get_model():
     """Send ATI command to output the FONA identification information.
+
     This method first checks if there is a successful connection between the
     Raspberry Pi and the FONA device. If so, the command for outputting FONA
     identification information is sent, and the output of the FONA
     is then returned; if a successful connection was not obtained, the
     method raises the IOError to the caller.
+
     Returns:
         String of FONA model and revision
     """
@@ -46,10 +62,12 @@ def get_model():
 def get_simcard_number():
     """Send AT+CCID command to output the SIM card identifier (outputs
     Integrated Circuit Card ID (CCID)).
+
     First checks if there is a successful connection. If so, the command for
     outputting SIM card number is sent, and the output of the FONA
     is then returned; if a successful connection was not obtained, the
     method raises the IOError to the caller.
+
     Returns:
         String of SIM card identifier
     """
@@ -59,7 +77,8 @@ def get_simcard_number():
     return _get_output()
 
 def get_reception():
-    """Send AT+CSQ command to output the reception of the FONA
+    """Send AT+CSQ command to output the reception of the FONA.
+
     First checks if there is a successful connection. If so, the command for
     outputting reception is sent, and the output of the FONA is then returned.
     The output of the FONA device after sending this command should be in the
@@ -68,6 +87,7 @@ def get_reception():
     where the X determines the strength of the reception: a higher number means
     a stronger reception. If a successful connection was not obtained, the
     method raises the IOError to the caller.
+
     Returns:
         String of reception
     """
@@ -78,12 +98,14 @@ def get_reception():
     
 def get_carrier_name():
     """Send AT+CSPN command to output the name of the carrier.
+
     First checks if there is a successful connection. If so, the command for
     outputting carrier name is sent, and the output of the FONA is then
     returned. If using a non-major carrier, it is possible for this method to
     return a string array which contains the string ERROR. If this is the case,
     this error string should be disregarded. If a successful connection was not
     obtained, the method raises the IOError to the caller.
+
     Returns:
         String of carrier name
     """
@@ -92,7 +114,19 @@ def get_carrier_name():
     _send_command('AT+CSPN')
     return _get_output()
 
-def get_battery():
+def get_battery_percentage():
+    """Send AT+CBC command to output the battery percentage of the FONA device.
+
+    First this method checks the connection from the FONA device to the
+    Raspberry Pi. Then this device sends the command to output the battery
+    percentage of the FONA device which is then returned as a string array.
+
+    Returns:
+        Battery percentage of the FONA device in a string array in the form:
+            ['AT+CBC', '+CBC: 0,100,4220', '', 'OK']
+        where the percentage is the number between the 0 and 4220 (in this case,
+        the FONA device is 100% charged)
+    """
     check_connection()
     sleep(0.2)
     _send_command('AT+CBC')
@@ -108,12 +142,9 @@ def send_message(number, message):
     this allows the text directly typed in the terminal to be used as the
     message to be sent. The command for setting the phone number to be texted is
     written, using the number parameter, followed by writing the message to the
-    FONA device. Finally the CTRL-Z signal is sent, sending the message to the
-    desired recipient.
-
-    Between each call to _send_command there are calls to time.sleep(0.2) which
-    is needed to ensure that the previous _send has enough time to write to the
-    FONA device before any other writes occur.
+    FONA device; this is why changing the text type was required. Finally the
+    CTRL-Z signal is sent, escaping the direct message entry and sending the
+    message to the desired recipient.
 
     Args:
         number (str): string of the phone number to send the message to
@@ -160,7 +191,7 @@ def message_received():
 
     Returns:
         If any new messages have been received, this method returns non zero
-        (the number of new messages unaccounted for); otherwise it returns zero.
+        (the number of new messages unaccounted for); otherwise it returns zero
     """
     check_connection()
     sleep(0.2)
@@ -177,8 +208,16 @@ def message_received():
     return sms_received - sms_recorded
 
 def parse_message(output):
-    """Returns only the message payload of the ith message received based on
-    its output.
+    """Parses the message payload from the FONA device output after sending it
+    its command for outputting the full details of an SMS received.
+
+    In order to extract the message from the output, this message only
+    concatenates elements of the string output. The output string array is in
+    the format:
+        ['AT+CMGF=1', 'OK', 'AT+CSDH=1', 'OK', 'AT+CMGR=2', '+CMGR: "REC READ",
+        "+14127360806","","17/05/28,14:33:14-16",145,4,0,0,"+12063130055",
+        145,5', 'Hello', '', 'OK']
+    where elements are indicated by single quotes. 
     """
     message = ""
     for i in range(2 , len(output) - 2):
@@ -245,8 +284,8 @@ def get_n_newest_sms(n):
         sleep(0.2)
         _send_command('AT+CMGR=' + str(i))
         output = _get_output()
-        messages['number'].append(output[1].split('"')[3].replace('+',''))
-        messages['timestamp'].append(output[1].split('"')[7])
+        messages['number'].append(output[5].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[5].split('"')[7])
         messages['message'].append(parse_message(output))
     return messages
 
@@ -266,7 +305,7 @@ def get_n_oldest_sms(n):
         sleep(0.2)
         _send_command('AT+CMGR=' + str(i))
         output = _get_output()
-        messages['number'].append(output[1].split('"')[3].replace('+',''))
-        messages['timestamp'].append(output[1].split('"')[7])
+        messages['number'].append(output[5].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[5].split('"')[7])
         messages['message'].append(parse_message(output))
     return messages
