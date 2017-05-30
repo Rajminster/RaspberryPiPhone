@@ -2,28 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/contacts/contacts.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/contacts/contacts.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/contacts/ui.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/email/contacts.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/email/email.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/email/ui.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/gallery/contacts.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/gallery/gallery.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/gallery/ui.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/message/message.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/music/music.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/music/music.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/music/ui.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/phone/phone.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/settings/settings.kv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/settings/settings.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/settings/ui.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/RaspberryPiPhone.iml" afterPath="$PROJECT_DIR$/.idea/RaspberryPiPhone.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/gallery/gallery.kv" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pi/gallery/contacts.kv" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/HomeScreen.kv" afterPath="$PROJECT_DIR$/pi/HomeScreen.kv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/main.py" afterPath="$PROJECT_DIR$/pi/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/gallery/gallery.py" afterPath="$PROJECT_DIR$/pi/gallery/gallery.py" />
     </list>
     <ignored path="RaspberryPiPhone.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pi/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+            <state relative-caret-position="330">
+              <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -56,11 +38,33 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="gallery.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="462">
+              <caret line="21" column="27" selection-start-line="21" selection-start-column="27" selection-end-line="21" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gallery.kv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.kv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="440">
+              <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="HomeScreen.kv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pi/HomeScreen.kv">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="15" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -95,13 +99,15 @@
         <option value="$PROJECT_DIR$/pi/contacts/ui.py" />
         <option value="$PROJECT_DIR$/pi/email/email.py" />
         <option value="$PROJECT_DIR$/pi/email/ui.py" />
-        <option value="$PROJECT_DIR$/pi/gallery/gallery.py" />
         <option value="$PROJECT_DIR$/pi/gallery/ui.py" />
         <option value="$PROJECT_DIR$/pi/music/music.py" />
         <option value="$PROJECT_DIR$/pi/music/ui.py" />
         <option value="$PROJECT_DIR$/pi/settings/settings.py" />
         <option value="$PROJECT_DIR$/pi/settings/ui.py" />
         <option value="$PROJECT_DIR$/pi/camera/ui.py" />
+        <option value="$PROJECT_DIR$/pi/gallery/contacts.kv" />
+        <option value="$PROJECT_DIR$/pi/gallery/gallery.kv" />
+        <option value="$PROJECT_DIR$/pi/gallery/gallery.py" />
       </list>
     </option>
   </component>
@@ -169,6 +175,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RaspberryPiPhone" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RaspberryPiPhone" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gallery" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
@@ -184,7 +208,7 @@
       <recent name="C:\Users\rajmi\Documents\GitHub\RaspberryPiPhone\pi" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.ui">
+  <component name="RunManager" selected="Python.gallery">
     <configuration default="false" name="ui" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -198,23 +222,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="RaspberryPiPhone" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pi/camera/ui.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="RaspberryPiPhone" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -266,6 +273,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="RaspberryPiPhone" />
       <option name="SCRIPT_NAME" value="C:/Python35/share/kivy-examples/guide/designwithkv/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="gallery" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pi/gallery" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="RaspberryPiPhone" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pi/gallery/gallery.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -406,18 +430,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.ui" />
-      <item index="1" class="java.lang.String" itemvalue="Python.main" />
-      <item index="2" class="java.lang.String" itemvalue="Python.main (1)" />
-      <item index="3" class="java.lang.String" itemvalue="Python.main (2)" />
-      <item index="4" class="java.lang.String" itemvalue="Python.main (3)" />
+      <item index="1" class="java.lang.String" itemvalue="Python.main (1)" />
+      <item index="2" class="java.lang.String" itemvalue="Python.main (2)" />
+      <item index="3" class="java.lang.String" itemvalue="Python.main (3)" />
+      <item index="4" class="java.lang.String" itemvalue="Python.gallery" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.ui" />
-        <item index="1" class="java.lang.String" itemvalue="Python.main (1)" />
-        <item index="2" class="java.lang.String" itemvalue="Python.main (3)" />
-        <item index="3" class="java.lang.String" itemvalue="Python.main (2)" />
-        <item index="4" class="java.lang.String" itemvalue="Python.main" />
+        <item index="0" class="java.lang.String" itemvalue="Python.gallery" />
+        <item index="1" class="java.lang.String" itemvalue="Python.ui" />
+        <item index="2" class="java.lang.String" itemvalue="Python.main (1)" />
+        <item index="3" class="java.lang.String" itemvalue="Python.main (3)" />
+        <item index="4" class="java.lang.String" itemvalue="Python.main (2)" />
       </list>
     </recent_temporary>
   </component>
@@ -601,14 +625,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pi/email/ui.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -649,23 +665,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pi/HomeScreen.kv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pi/email/contacts.kv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pi/gallery/contacts.kv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -705,10 +705,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pi/HomeScreen.kv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="15" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/gallery/contacts.kv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pi/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+        <state relative-caret-position="330">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.kv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="21" column="27" selection-start-line="21" selection-start-column="27" selection-end-line="21" selection-end-column="27" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
