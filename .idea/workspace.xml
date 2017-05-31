@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CAD/OldVersions/Raspberry PiPhone.0006.iam" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CAD/Camera.ipt" afterPath="$PROJECT_DIR$/CAD/Camera.ipt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CAD/Raspberry PiPhone.iam" afterPath="$PROJECT_DIR$/CAD/Raspberry PiPhone.iam" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CAD/Screen Driver.ipt" afterPath="$PROJECT_DIR$/CAD/Screen Driver.ipt" />
-    </list>
+    <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="" />
     <ignored path="RaspberryPiPhone.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -54,7 +49,7 @@
         <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-3440">
-              <caret line="126" column="71" selection-start-line="126" selection-start-column="71" selection-end-line="126" selection-end-column="71" />
+              <caret line="125" column="71" selection-start-line="125" selection-start-column="71" selection-end-line="125" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -754,7 +749,7 @@
     <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3440">
-          <caret line="126" column="71" selection-start-line="126" selection-start-column="71" selection-end-line="126" selection-end-column="71" />
+          <caret line="125" column="71" selection-start-line="125" selection-start-column="71" selection-end-line="125" selection-end-column="71" />
           <folding />
         </state>
       </provider>
