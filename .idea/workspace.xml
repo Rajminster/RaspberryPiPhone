@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/gallery/gallery.py" afterPath="$PROJECT_DIR$/pi/gallery/gallery.py" />
-    </list>
+    <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="" />
     <ignored path="RaspberryPiPhone.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -35,7 +33,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gallery.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="gallery.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pi/gallery/gallery.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="836">
@@ -43,6 +41,16 @@
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fona_commands.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3440">
+              <caret line="104" column="71" selection-start-line="104" selection-start-column="71" selection-end-line="104" selection-end-column="71" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -170,6 +178,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RaspberryPiPhone" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RaspberryPiPhone" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fona_processes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
@@ -177,7 +203,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/GitHub/PortableGit_f02737a78695063deace08e96d5042710d3e32db/cmd/git.exe" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.appearance" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
@@ -517,13 +543,6 @@
     <entry file="file://C:/Python35/Lib/site-packages/kivy/lang/parser.py" />
     <entry file="file://C:/Python35/share/kivy-examples/gestures/my_gestures.py" />
     <entry file="file://C:/Python35/share/kivy-examples/gestures/gesture_board.py" />
-    <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python35/share/kivy-examples/tutorials/notes/final/main.py" />
     <entry file="file://$PROJECT_DIR$/pi/home_screen.py" />
     <entry file="file://C:/Python35/share/kivy-examples/demo/showcase/main.py" />
@@ -723,6 +742,14 @@
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3440">
+          <caret line="104" column="71" selection-start-line="104" selection-start-column="71" selection-end-line="104" selection-end-column="71" />
+          <folding />
         </state>
       </provider>
     </entry>
