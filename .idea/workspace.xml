@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="" />
+    <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CAD/RapberryPiZero.iam" afterPath="$PROJECT_DIR$/CAD/RapberryPiZero.iam" />
+    </list>
     <ignored path="RaspberryPiPhone.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,7 +51,7 @@
         <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-3440">
-              <caret line="104" column="71" selection-start-line="104" selection-start-column="71" selection-end-line="104" selection-end-column="71" />
+              <caret line="126" column="71" selection-start-line="126" selection-start-column="71" selection-end-line="126" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -93,6 +95,7 @@
         <option value="$PROJECT_DIR$/pi/gallery/contacts.kv" />
         <option value="$PROJECT_DIR$/pi/gallery/gallery.kv" />
         <option value="$PROJECT_DIR$/pi/gallery/gallery.py" />
+        <option value="$PROJECT_DIR$/pi/fona_processes/fona_commands.py" />
       </list>
     </option>
   </component>
@@ -748,7 +751,7 @@
     <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3440">
-          <caret line="104" column="71" selection-start-line="104" selection-start-column="71" selection-end-line="104" selection-end-column="71" />
+          <caret line="126" column="71" selection-start-line="126" selection-start-column="71" selection-end-line="126" selection-end-column="71" />
           <folding />
         </state>
       </provider>
