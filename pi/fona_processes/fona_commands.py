@@ -2,7 +2,6 @@
 
 from fona import _get_output, _send_command, _send_end_signal
 from time import sleep
-from traceback import format_exc
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-28'
@@ -207,36 +206,32 @@ def message_received():
     f.write(str(max(sms_received, sms_recorded)))
     return sms_received - sms_recorded
 
-def parse_message(output):
+def _parse_message(output):
     """Parses the message payload from the FONA device output after sending it
     its command for outputting the full details of an SMS received.
+
+    In order to tell when the message begins, this method must begin iterating
+    over the output parameter given. Since any number of commands at least one
+    could have been written to the FONA before this method has been called, the
+    only way to determine where the message begins is the iterate until the
+    string denoting message status type (string beginning with +CMGR:) is found;
+    the next string is the beginning of the message.
     
-    In the get_all_sms method, this method is called only after one command has
-    been sent to the FONA device. This is done in order to know for certain how
-    much to offset the for loop by to parse the message. If more than one
-    command was entered into the FONA serial port, the offset would have to
-    begin at two times the number of previously entered commands; in order to
-    work around this issue, exactly one command should be written to the serial
-    port before this method is called.
-
-    In the get_n_newest and get_n_oldest methods, multiple commands are written
-    to the FONA port, but before the command to output a specific SMS is
-    written, the FONA port is flushed by calling the _get_output method.
-
-    In order to extract the message from the output, this message only
-    concatenates elements of the string output. The output string array is in
-    the format:
+    The output parameter could have the format:
         [AT+CMGR=2', '+CMGR: "REC READ", "+XXXXXXXXXXX","","17/05/28,
         14:33:14-16",145,4,0,0,"+12063130055", 145,5', 'Hello', '', 'OK']
-    where elements are indicated by single quotes.
+    where elements are indicated by single quotes and the X's make up the phone
+    number of the sender. Here, the SMS begins in the second array entry and
+    ends at the third to last, with empty entries indicating a new line within
+    the message. The OK string is a signal from the FONA device that the command
+    has successfully finished.
 
-    The SMS begins in the second array entry and ends at the third to last, with
-    empty entries signaling a new line in the message.
+    Arg:
+        output (str list): string array outputted from the FONA device serial
+        port and given by the _get_output method
 
-
-    ['AT+CMGF=1', 'OK', 'AT+CSDH=1', 'OK', 'AT+CMGR=2', '+CMGR: "REC READ",
-        "+14127360806","","17/05/28,14:33:14-16",145,4,0,0,"+12063130055",
-        145,5', 'Hello', '', 'OK']
+    Returns:
+        The SMS received in one string as it was sent
     """
     message = ""
     message_reached = False
@@ -248,93 +243,196 @@ def parse_message(output):
     return message[:-2]
 
 def get_all_sms():
-    """Returns array of (number, timestamp, message) tuples for all messages received.
+    """Returns array of number, timestamp, message tuples for all messages
+    received by the FONA device with successful connection to Raspberry Pi.
     
-    In order to get received messages, first the command for outputting the
-    number of total messages received is written to the FONA port, and the
-    output is saved.
+    In order to get any message received with useful metadata, first two
+    commands must be sent to the FONA device: AT+CMGF=1 which sets SMS message
+    format to text and AT+CSDH=1 which shows SMS text mode metadata (timestamp
+    received, sender phone number, message contents, etc.).
+
+    With this setup, the AT+CPMS command is sent which outputs the total number
+    of SMS received which is used to iterate through each message received. To
+    output the ith message received, the AT+CMGR=i command is sent, and with the
+    first two commands sent, the FONA device outputs clear metadata about the
+    SMS which is appended to the array to be returned.
+
+    In this method, the total number of messages received is indexed as the
+    fifth element of the _get_output string array because before the AT+CPMS?
+    command was entered, two other commands were entered which each take two
+    indices in the array. NOTE: the FONA device does not use zero-indexing when
+    outputting messages received.
+
+    Returns:
+        Array of sender phone number, SMS timestamp, and message tuples of all
+        messages received by the FONA device
     """
     check_connection()
     sleep(0.2)
-    _send_command('AT+CMGF=1') # display message in output
+    _send_command('AT+CMGF=1')
     sleep(0.2)
-    _send_command('AT+CSDH=1') # detailed SMS output
+    _send_command('AT+CSDH=1')
     sleep(0.2)
     _send_command('AT+CPMS?')
-    num = int(_get_output()[5].split(',')[1]) # 5 because other commands were entered
+    sleep(0.2)
+    sms_received = int(_get_output()[5].split(',')[1])
     messages = {'number':[], 'timestamp': [], 'message': []}
-    for i in range(1, num + 1):
-        sleep(0.2)
+    for i in range(1, sms_received + 1):
         _send_command('AT+CMGR=' + str(i))
+        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(_parse_message(output))
     return messages
 
 def get_new_sms():
-    num_new = message_received()
+    """Returns array of number, timestamp, message tuples for all messages which
+    have been recently received by the FONA which have just been accounted for
+    in the message_received method.
+    
+    This method first calls the message_received method which ensures a
+    successful connection exists between the FONA device and the Raspberry Pi
+    as well as find out how many messages have been marked as 'new'. After this,
+    the method writes the AT+CMGF=1 command to set the SMS message format to
+    text to make message output legible. Next it writes the AT+CSDH=1 command
+    which makes the FONA console output more detailed metadata about messages
+    received.
+
+    The command to output the total number of messages received is then entered
+    to only grab the newest received to return. This value is obtained by
+    indexing into the fifth element of the _get_output string array because it's
+    the output of the third command entered; since each command requires two
+    indices of the _get_output array (one for the command and one for its
+    output), it's the sixth place (5 when zero-indexed).
+    
+    Now the method iterates through the new messages received and appends those
+    to the array to be returned with metadata phone number of sender, timestamp
+    of message, and message contents. NOTE: the FONA does not zero-index
+    messages received, so 1 is added to the lower and upper bound of the for
+    loop.
+
+    Returns:
+        Array of sender phone number, message timestamp, and message contents
+        tuples for new messages received
+    """
+    new_received = message_received()
     sleep(0.2)
-    _send_command('AT+CMGF=1') # display message in output
+    _send_command('AT+CMGF=1')
     sleep(0.2)
-    _send_command('AT+CSDH=1') # detailed SMS output
+    _send_command('AT+CSDH=1')
     sleep(0.2)
     _send_command('AT+CPMS?')
-    num = int(_get_output()[5].split(',')[1]) # 5 because other commands were entered
+    sleep(0.2)
+    sms_received = int(_get_output()[5].split(',')[1])
     messages = {'number':[], 'timestamp': [], 'message': []}
-    for i in range(num - num_new + 1, num + 1):
-        sleep(0.2)
+    for i in range(sms_received - new_received + 1, sms_received + 1):
         _send_command('AT+CMGR=' + str(i))
+        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+', ''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(_parse_message(output))
     return messages
 
 def get_n_newest_sms(n):
+    """Returns array of sender phone number, timestamp, and message content
+    tuples of the n newest received messages.
+
+    This is accomplished by first checking for an existing connection between
+    the Raspberry Pi and the FONA device. This method then writes the AT+CPMS?
+    command to output the total number of messages received in order to error
+    check the n argument. After this, commands for setting SMS message format
+    and output detailed SMS metadata are entered (AT+CMGF=1 and AT+CSDH=1,
+    respectively). Because the output from these two commands are not necessary,
+    this method calls the _get_output method in order to flush the FONA serial
+    port's output.
+
+    Now the method iterates through the n newest messages and appends their
+    sender phone number, message timestamp, and message contents to the array it
+    will return. NOTE: the FONA does not zero-index messages received, so 1 is
+    added to the lower and upper bounds of the for loop.
+
+    Arg:
+        n (int): the number of newest messages to return
+
+    Raises:
+        ValueError if the value for n is less than 1 or greater than the number
+        of messages received
+
+    Returns:
+        Array of sender phone number, message timestamp, and message contents
+        tuples for newest messages received
+    """
     check_connection()
     sleep(0.2)
     _send_command('AT+CPMS?')
-    num = int(_get_output()[1].split(',')[1]) # 1 because other command was entered
-    if n > num or n < 1:
+    sms_received = int(_get_output()[1].split(',')[1])
+    if n > sms_received or n < 1:
         raise ValueError('\n***\n*** Out of range value for n\n***\n')
     sleep(0.2)
-    _send_command('AT+CMGF=1') # display message in output
+    _send_command('AT+CMGF=1')
     sleep(0.2)
-    _send_command('AT+CSDH=1') # detailed SMS output
-    _get_output() # clear FONA output
+    _send_command('AT+CSDH=1')
+    sleep(0.2)
+    _get_output()
     messages = {'number':[], 'timestamp': [], 'message': []}
-    for i in range(num - n + 1, num + 1):
-        sleep(0.2)
+    for i in range(sms_received - n + 1, sms_received + 1):
         _send_command('AT+CMGR=' + str(i))
+        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(_parse_message(output))
     return messages
 
 def get_n_oldest_sms(n):
+    """Returns array of sender phone number, timestamp, and message content
+    tuples of the n oldest received messages.
+
+    This is accomplished by first checking for an existing connection between
+    the Raspberry Pi and the FONA device. This method then writes the AT+CPMS?
+    command to output the total number of messages received in order to error
+    check the n argument. After this, commands for setting SMS message format
+    and output detailed SMS metadata are entered (AT+CMGF=1 and AT+CSDH=1,
+    respectively). Because the output from these two commands are not necessary,
+    this method calls the _get_output method in order to flush the FONA serial
+    port's output.
+
+    Now the method iterates through the n oldest messages and appends their
+    sender phone number, message timestamp, and message contents to the array it
+    will return. NOTE: the FONA does not zero-index messages received, so 1 is
+    added to the lower and upper bounds of the for loop.
+
+    Arg:
+        n (int): the number of oldest messages to return
+
+    Raises:
+        ValueError if the value for n is less than 1 or greater than the number
+        of messages received
+
+    Returns:
+        Array of sender phone number, message timestamp, and message contents
+        tuples for oldest messages received
+    """
     check_connection()
     sleep(0.2)
     _send_command('AT+CPMS?')
-    num = int(_get_output()[1].split(',')[1]) # 1 because other command was entered
-    if n > num or n < 1:
+    sms_received = int(_get_output()[1].split(',')[1])
+    if n > sms_received or n < 1:
         raise ValueError('\n***\n*** Out of range value for n\n***\n')
     sleep(0.2)
-    _send_command('AT+CMGF=1') # display message in output
+    _send_command('AT+CMGF=1')
     sleep(0.2)
-    _send_command('AT+CSDH=1') # detailed SMS output
-    _get_output() # clear FONA output
+    _send_command('AT+CSDH=1')
+    sleep(0.2)
+    _get_output()
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(1, n + 1):
-        sleep(0.2)
         _send_command('AT+CMGR=' + str(i))
+        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(output))
+        messages['message'].append(_parse_message(output))
     return messages
-
-if __name__ == '__main__':
-    print get_n_oldest_sms(1)['message'][0]
-    print 'here'
