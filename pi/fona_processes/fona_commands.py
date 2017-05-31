@@ -207,32 +207,52 @@ def message_received():
     f.write(str(max(sms_received, sms_recorded)))
     return sms_received - sms_recorded
 
-def parse_message(prev_commands, output):
+def parse_message(output):
     """Parses the message payload from the FONA device output after sending it
     its command for outputting the full details of an SMS received.
+    
+    In the get_all_sms method, this method is called only after one command has
+    been sent to the FONA device. This is done in order to know for certain how
+    much to offset the for loop by to parse the message. If more than one
+    command was entered into the FONA serial port, the offset would have to
+    begin at two times the number of previously entered commands; in order to
+    work around this issue, exactly one command should be written to the serial
+    port before this method is called.
+
+    In the get_n_newest and get_n_oldest methods, multiple commands are written
+    to the FONA port, but before the command to output a specific SMS is
+    written, the FONA port is flushed by calling the _get_output method.
 
     In order to extract the message from the output, this message only
     concatenates elements of the string output. The output string array is in
     the format:
-        ['AT+CMGF=1', 'OK', 'AT+CSDH=1', 'OK', 'AT+CMGR=2', '+CMGR: "REC READ",
+        [AT+CMGR=2', '+CMGR: "REC READ", "+XXXXXXXXXXX","","17/05/28,
+        14:33:14-16",145,4,0,0,"+12063130055", 145,5', 'Hello', '', 'OK']
+    where elements are indicated by single quotes.
+
+    The SMS begins in the second array entry and ends at the third to last, with
+    empty entries signaling a new line in the message.
+
+
+    ['AT+CMGF=1', 'OK', 'AT+CSDH=1', 'OK', 'AT+CMGR=2', '+CMGR: "REC READ",
         "+14127360806","","17/05/28,14:33:14-16",145,4,0,0,"+12063130055",
         145,5', 'Hello', '', 'OK']
-    where elements are indicated by single quotes. In this case, two commands
-    are written before this method is called, so the output regarding the SMS
-    begins at index 5 (beginning with '+CMGR:'); therefore the value for
-    prev_commands is 2. 
     """
     message = ""
-    for i in range(prev_commands * 2 , len(output) - 2):
-        message += output[i] + '\n'
-    return message[:-1]
+    message_reached = False
+    for string in output:
+        if message_reached and string != 'OK':
+            message += string + '\n'
+        if '+CMGR:' in string:
+            message_reached = True
+    return message[:-2]
 
 def get_all_sms():
     """Returns array of (number, timestamp, message) tuples for all messages received.
     
     In order to get received messages, first the command for outputting the
     number of total messages received is written to the FONA port, and the
-    output is saved. 
+    output is saved.
     """
     check_connection()
     sleep(0.2)
@@ -249,7 +269,7 @@ def get_all_sms():
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(1, output))
+        messages['message'].append(parse_message(output))
     return messages
 
 def get_new_sms():
@@ -268,7 +288,7 @@ def get_new_sms():
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+', ''))
         messages['timestamp'].append(output[1].split('"')[7])
-        messages['message'].append(parse_message(1, output))
+        messages['message'].append(parse_message(output))
     return messages
 
 def get_n_newest_sms(n):
@@ -282,14 +302,15 @@ def get_n_newest_sms(n):
     _send_command('AT+CMGF=1') # display message in output
     sleep(0.2)
     _send_command('AT+CSDH=1') # detailed SMS output
+    _get_output() # clear FONA output
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(num - n + 1, num + 1):
         sleep(0.2)
         _send_command('AT+CMGR=' + str(i))
         output = _get_output()
-        messages['number'].append(output[5].split('"')[3].replace('+',''))
-        messages['timestamp'].append(output[5].split('"')[7])
-        messages['message'].append(parse_message(3, output))
+        messages['number'].append(output[1].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[1].split('"')[7])
+        messages['message'].append(parse_message(output))
     return messages
 
 def get_n_oldest_sms(n):
@@ -303,12 +324,17 @@ def get_n_oldest_sms(n):
     _send_command('AT+CMGF=1') # display message in output
     sleep(0.2)
     _send_command('AT+CSDH=1') # detailed SMS output
+    _get_output() # clear FONA output
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(1, n + 1):
         sleep(0.2)
         _send_command('AT+CMGR=' + str(i))
         output = _get_output()
-        messages['number'].append(output[5].split('"')[3].replace('+',''))
-        messages['timestamp'].append(output[5].split('"')[7])
-        messages['message'].append(parse_message(3, output))
+        messages['number'].append(output[1].split('"')[3].replace('+',''))
+        messages['timestamp'].append(output[1].split('"')[7])
+        messages['message'].append(parse_message(output))
     return messages
+
+if __name__ == '__main__':
+    print get_n_oldest_sms(1)['message'][0]
+    print 'here'
