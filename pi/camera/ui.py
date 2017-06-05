@@ -1,4 +1,5 @@
 from kivy.uix.button import Button as b
+from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.gesture import Gesture, GestureDatabase
 from kivy.lang import Builder
@@ -16,6 +17,9 @@ Builder.load_string("""
     on_enter: cmra
     AnchorLayout:
 
+        anchor_x:
+        anchor_y:
+
         Button:
             border: Line(circle=150, 150, 50)
             close: True
@@ -23,19 +27,29 @@ Builder.load_string("""
         Button:
             text: 'Low Light'
             on_press: cmra.lowLightImage()
+
+        Button:
+            text: 'record'
+            on_press: root.manager.current = 'record'
 <RecordScreen>
     BoxLayout:
         Button:
             border: Line(circle=150, 150, 50)
+            close: True
             on_press: cmra.record()
+
+        Button:
+            text: 'capture image'
+            on_press: root.manager.current = 'camera'
 """)
 
 # class for the camera screen
+# not exactly sure what this is actually for, but kivy documentation had it, so I have it
 
 class CameraScreen(Screen):
     pass
 
-# class for the Record screen
+# class for the Record screen ^
 
 class RecordScreen(Screen):
     pass
@@ -58,7 +72,7 @@ sm.add_widget(RecordScreen(name='record'))
 
 
 
-class UI():
+class UI(App):
     # circle = ObjectProperty(None)
     # def __init__(self):
     #     I_button = b(text='Picture', font_size=12)
