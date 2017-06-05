@@ -1,0 +1,16 @@
+<CameraScreen>:
+    on_enter: cmra
+    AnchorLayout:
+
+        Button:
+            border: Line(circle=150, 150, 50)
+            close: True
+            on_press: cmra.image()
+        Button:
+            text: 'Low Light'
+            on_press: cmra.lowLightImage()
+<RecordScreen>
+    BoxLayout:
+        Button:
+            border: Line(circle=150, 150, 50)
+            on_press: cmra.record()

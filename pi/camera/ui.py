@@ -3,11 +3,11 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.gesture import Gesture, GestureDatabase
 from kivy.lang import Builder
-from camera.py import Camera
+#from camera.py import Camera
 
 # builds a camera
 
-cmra = Camera()
+#cmra = Camera()
 
 
 # builds the screens using Builder and screenmanager as a pseudo-kv file
@@ -61,6 +61,7 @@ sm = ScreenManager()
 sm.add_widget(CameraScreen(name='camera'))
 sm.add_widget(RecordScreen(name='record'))
 
+<<<<<<< HEAD
 
 
 
@@ -73,6 +74,9 @@ sm.add_widget(RecordScreen(name='record'))
 
 
 class UI(App):
+=======
+class UI():
+>>>>>>> 18bb84fa7ca0ac69e34c1865f4a8517c89015979
     # circle = ObjectProperty(None)
     # def __init__(self):
     #     I_button = b(text='Picture', font_size=12)

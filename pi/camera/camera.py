@@ -11,7 +11,7 @@ import pygame
 class Camera():
     """Wrapper class to interact with the Raspberry Pi's camera hardware
     in order to capture and save photos as well as record videos.
-    
+
     Attributes:
         WIDTH (int): width of the touch screen
         HEIGHT (int): height of the touch screen
@@ -21,7 +21,7 @@ class Camera():
     WIDTH = 480
     HEIGHT = 800
     buttonHit = False
-    
+
     def __init__(self):
         """Constructor for Camera object.
 
@@ -39,17 +39,17 @@ class Camera():
         self.camera = PiCamera()
         self.camera.resolution = (WIDTH, HEIGHT)
         self.camera.rotation = 180
-    
+
     def capture(self):
         """Captures image from camera and saves to the Pictures directory."""
         sleep(2) # camera wake up time
         self.camera.capture('../Pictures/' + self.image_file_name() + '.jpg')
         """TODO: probably just want to name it after the current date so you don't have to worry about overwritting existing photos"""
 
-    def image_file_name(self);
+    def image_file_name(self):
         """Reads the index file in order to find the current file name number and
         update that.
-        
+
         In order to name photo files from the camera, names are a number
         followed by the appropriate file extension (1.jpg, 2.jpg, 3.jpg, ...)
         Returns string of the file name of the next image to be saved.
@@ -65,11 +65,11 @@ class Camera():
             f.write('1')
             f.close()
             return '0'
-    
-    def video_file_name(self);
+
+    def video_file_name(self):
         """Reads the index file in order to find the current file name number and
         update that.
-        
+
         In order to name video files from the camera, names are a number
         followed by the appropriate file extension (1.jpg, 2.jpg, 3.jpg, ...)
         Returns string of the file name of the next video to be saved.
@@ -91,7 +91,7 @@ class Camera():
         while True:
             # self.camera.resolution = (1024, 768)
             """Buffer for screen color data"""
-			rgb = bytearray(WIDTH * HEIGHT * 3)
+            rgb = bytearray(WIDTH * HEIGHT * 3)
             stream = BytesIO()
             self.camera.capture(stream, use_video_port=True, format='rgb')
             stream.seek(0)
@@ -138,10 +138,10 @@ class Camera():
     def enable_flash(self):
         """Enables the Raspberry Pi's camera flash"""
         self.camera.flash_mode = 'on'
-    
+
     def disable_flash(self):
-	"""Disables the Raspberry Pi's camera flash"""
-	self.camera.flash_mode = 'off'
+        "Disables the Raspberry Pi's camera"
+        self.camera.flash_mode = 'off'
 
     def close(self):
         """Method called whenever the camera UI is closed. Closes the Raspberry Pi's camera."""
