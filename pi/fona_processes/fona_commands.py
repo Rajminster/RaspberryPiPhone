@@ -12,11 +12,6 @@ __version__ = '1.0'
 Using the methods defined in fona.py, this library allows for full use of the
 FONA device by sending specific commands to perform tasks such as receive SMS,
 send SMS, check FONA battery percentage, etc.
-
-NOTE: whenever calling the fona._send_command method, it is necessary to call
-time.sleep(0.2) after in order to ensure that the command being sent will be
-written completely. Without waiting, the serial port may be written to too
-frequently, resulting in incomplete command entries and unintended output/error.
 """
 
 def check_connection():
@@ -25,6 +20,7 @@ def check_connection():
     This is accomplished by sending the AT command to the FONA device serial
     port. Whenever this command is sent, 'OK' will be outputted to the serial
     port if there is a successful connection.
+
     If connecting to the FONA device is unsuccessful, the FONA device will not
     output OK after which this method will raise an IOError which signals to the
     caller that there was not a successful connection. This method should be
@@ -41,6 +37,20 @@ def check_connection():
         print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n'
         raise IOError('\n***\n*** Unable connecting to FONA\n***\n')
 
+def check_output(output):
+    """Checks if the FONA 2G device can be connected to successfully.
+
+    This is accomplished by checking if the output of entering a command results
+    in a string array whose last entry is the string OK.
+
+    Raises:
+        IOError if the Raspberry Pi cannot connect to the FONA device
+    """
+    if output[len(output) - 1] != 'OK':
+        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n'
+        raise IOError('\n***\n*** Unable connecting to FONA\n***\n')
+    print '\n***\n*** SUCCESSFUL connecting to FONA\n***\n'
+
 def get_model():
     """Send ATI command to output the FONA identification information.
 
@@ -53,10 +63,10 @@ def get_model():
     Returns:
         String of FONA model and revision
     """
-    check_connection()
-    sleep(0.2)
     _send_command('ATI')
-    return _get_output()
+    output = _get_output()
+    check_output(output)
+    return output
 
 def get_simcard_number():
     """Send AT+CCID command to output the SIM card identifier (outputs
@@ -71,7 +81,6 @@ def get_simcard_number():
         String of SIM card identifier
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CCID')
     return _get_output()
 
@@ -91,10 +100,9 @@ def get_reception():
         String of reception
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CSQ')
-    return _get_output()
-    
+    return _get_output()[1].split(',')[0].split(' ')[1]
+
 def get_carrier_name():
     """Send AT+CSPN command to output the name of the carrier.
 
@@ -109,7 +117,6 @@ def get_carrier_name():
         String of carrier name
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CSPN')
     return _get_output()
 
@@ -127,14 +134,13 @@ def get_battery_percentage():
         the FONA device is 100% charged)
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CBC')
     return _get_output()
 
 def send_message(number, message):
     """Send an SMS to the phone number which is given by the string parameter
     number.
-    
+
     To send an SMS, first the connection with the FONA is checked. If
     successful, the AT command for changing the message type (AT+CMGF) is
     written to the FONA device. When entering this command in the FONA terminal,
@@ -146,17 +152,15 @@ def send_message(number, message):
     message to the desired recipient.
 
     Args:
-        number (str): string of the phone number to send the message to
+        number (str): string of the phone number to send the message to. NOTE:
+        the number which is the intended recipient must have the appropriate
+        international code
         message (str): the message to be sent to the phone number
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CMGF=1')
-    sleep(0.2)
     _send_command('AT+CMGS="' + number + '"')
-    sleep(0.2)
     _send_command(message)
-    sleep(0.2)
     _send_end_signal()
 
 def message_received():
@@ -193,7 +197,6 @@ def message_received():
         (the number of new messages unaccounted for); otherwise it returns zero
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CPMS?')
     sms_received = int(_get_output()[1].split(',')[1])
     f = open('sms_record.txt', 'r')
@@ -216,7 +219,7 @@ def _parse_message(output):
     only way to determine where the message begins is the iterate until the
     string denoting message status type (string beginning with +CMGR:) is found;
     the next string is the beginning of the message.
-    
+
     The output parameter could have the format:
         [AT+CMGR=2', '+CMGR: "REC READ", "+XXXXXXXXXXX","","17/05/28,
         14:33:14-16",145,4,0,0,"+12063130055", 145,5', 'Hello', '', 'OK']
@@ -245,7 +248,7 @@ def _parse_message(output):
 def get_all_sms():
     """Returns array of number, timestamp, message tuples for all messages
     received by the FONA device with successful connection to Raspberry Pi.
-    
+
     In order to get any message received with useful metadata, first two
     commands must be sent to the FONA device: AT+CMGF=1 which sets SMS message
     format to text and AT+CSDH=1 which shows SMS text mode metadata (timestamp
@@ -268,18 +271,13 @@ def get_all_sms():
         messages received by the FONA device
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CMGF=1')
-    sleep(0.2)
     _send_command('AT+CSDH=1')
-    sleep(0.2)
     _send_command('AT+CPMS?')
-    sleep(0.2)
     sms_received = int(_get_output()[5].split(',')[1])
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(1, sms_received + 1):
         _send_command('AT+CMGR=' + str(i))
-        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
@@ -290,7 +288,7 @@ def get_new_sms():
     """Returns array of number, timestamp, message tuples for all messages which
     have been recently received by the FONA which have just been accounted for
     in the message_received method.
-    
+
     This method first calls the message_received method which ensures a
     successful connection exists between the FONA device and the Raspberry Pi
     as well as find out how many messages have been marked as 'new'. After this,
@@ -305,7 +303,7 @@ def get_new_sms():
     the output of the third command entered; since each command requires two
     indices of the _get_output array (one for the command and one for its
     output), it's the sixth place (5 when zero-indexed).
-    
+
     Now the method iterates through the new messages received and appends those
     to the array to be returned with metadata phone number of sender, timestamp
     of message, and message contents. NOTE: the FONA does not zero-index
@@ -317,18 +315,13 @@ def get_new_sms():
         tuples for new messages received
     """
     new_received = message_received()
-    sleep(0.2)
     _send_command('AT+CMGF=1')
-    sleep(0.2)
     _send_command('AT+CSDH=1')
-    sleep(0.2)
     _send_command('AT+CPMS?')
-    sleep(0.2)
     sms_received = int(_get_output()[5].split(',')[1])
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(sms_received - new_received + 1, sms_received + 1):
         _send_command('AT+CMGR=' + str(i))
-        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+', ''))
         messages['timestamp'].append(output[1].split('"')[7])
@@ -365,21 +358,16 @@ def get_n_newest_sms(n):
         tuples for newest messages received
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CPMS?')
     sms_received = int(_get_output()[1].split(',')[1])
     if n > sms_received or n < 1:
         raise ValueError('\n***\n*** Out of range value for n\n***\n')
-    sleep(0.2)
     _send_command('AT+CMGF=1')
-    sleep(0.2)
     _send_command('AT+CSDH=1')
-    sleep(0.2)
     _get_output()
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(sms_received - n + 1, sms_received + 1):
         _send_command('AT+CMGR=' + str(i))
-        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
@@ -416,23 +404,85 @@ def get_n_oldest_sms(n):
         tuples for oldest messages received
     """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CPMS?')
     sms_received = int(_get_output()[1].split(',')[1])
     if n > sms_received or n < 1:
         raise ValueError('\n***\n*** Out of range value for n\n***\n')
-    sleep(0.2)
     _send_command('AT+CMGF=1')
-    sleep(0.2)
     _send_command('AT+CSDH=1')
-    sleep(0.2)
     _get_output()
     messages = {'number':[], 'timestamp': [], 'message': []}
     for i in range(1, n + 1):
         _send_command('AT+CMGR=' + str(i))
-        sleep(0.2)
         output = _get_output()
         messages['number'].append(output[1].split('"')[3].replace('+',''))
         messages['timestamp'].append(output[1].split('"')[7])
         messages['message'].append(_parse_message(output))
     return messages
+
+def call_number(number):
+    """Call the phone number parameter.
+
+    First check for a successful connection between the FONA device and the
+    Raspberry Pi. If this check is successful, then send the command for
+    calling a phone number.
+
+    Arg:
+        number (str): string of the phone number to call. NOTE: this phone
+        number should contain an international code.
+    """
+    check_connection()
+    _send_command('ATD' + number + ';')
+
+def answer_call():
+    check_connection()
+    _send_command('ATA')
+
+def end_call():
+    """Invariant: call in process; don't have to check connection."""
+    _send_command('ATH')
+
+def mute_call():
+    """Invariant: call in process; don't have to check connection."""
+    _send_command('AT+CMUT=1')
+
+def unmute_call():
+    """Invariant: call in process; don't have to check connection."""
+    _send_command('AT+CMUT=0')
+
+def play_audio(file_path):
+    """Intended to be used to play voicemail files"""
+    check_connection()
+    _send_command('AT+CMEDPLAY=1,' + file_path + ', 0, 50')
+
+def stop_audio(file_path):
+    """Intended to be used to play voicemail files"""
+    check_connection()
+    sleep(0.2)
+    _send_command('AT+CMEDPLAY=0,' + file_path + ', 0, 50')
+
+def pause_audio(file_path):
+    """Intended to be used to play voicemail files"""
+    check_connection()
+    _send_command('AT+CMEDPLAY=2,' + file_path + ', 0, 50')
+
+def resume_audio(file_path):
+    """Intended to be used to play voicemail files"""
+    check_connection()
+    _send_command('AT+CMEDPLAY=3,' + file_path + ', 0, 50')
+
+def set_audio_file_volume(volume):
+    if volume < 0 or volume > 100:
+        raise ValueError('\n***\n*** Out of range value for volume\n***\n')
+    check_connection()
+    _send_command('AT+CMEDIAVOL=' + volume)
+
+def start_voice_recording():
+    check_connection()
+    _send_command('AT+CREC=1')
+
+def set_speaker_volume(volume):
+    if volume < 0 or volume > 9:
+        raise ValueError('\n***\n*** Out of range value for volume\n***\n')
+    check_connection()
+    _send_command('ATL' + volume)
