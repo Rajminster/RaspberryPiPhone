@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from serial import Serial
+from time import sleep
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-24'
@@ -53,7 +54,7 @@ def _send_command(data):
     Since this library should be used in a multithreaded operating system, the
     invariant for this method is that the parent method calling this helper
     should have the thread lock for writing to the FONA device serial port.
-    
+
     NOTE: allow for Raspberry Pi to sleep for at least 0.2 seconds between calls
     of this method to allow for complete write of the data parameter. Without a
     time.sleep(0.2) between calls, data is written to the serial port too fast
@@ -62,8 +63,10 @@ def _send_command(data):
     Arg:
         data (str): string command. NOTE: \r is appended to commands
     """
+    print '***\n*** Sending"', data, '"to FONA device\n***'
     data += '\r'
     fona_port.write(data.encode('utf-8'))
+    sleep(0.2)
 
 def _send_end_signal():
     """Send the signal for CTRL-Z to the FONA device serial port.
@@ -82,7 +85,7 @@ def _send_end_signal():
 
 def _get_output():
     """Obtain and return the output of the FONA device after entering a command.
-    
+
     When sending a command to the FONA device through the command line, after a
     short delay, the device prints to the terminal line(s) of output depending
     on the command entered. This method returns a string array of the output of
