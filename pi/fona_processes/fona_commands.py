@@ -435,53 +435,138 @@ def call_number(number):
     _send_command('ATD' + number + ';')
 
 def answer_call():
+    """Answer incoming call to this FONA device.
+
+    If a call is incoming, this method will send the ATA command which instructs
+    the FONA device to answer that call.
+    """
     check_connection()
     _send_command('ATA')
 
 def end_call():
-    """Invariant: call in process; don't have to check connection."""
+    """Ends any current call in process.
+
+    Ends call in process by sending the ATH command. Since this method should be
+    called whenever a call is in process, this method does not check for
+    successful connection with the FONA device."""
     _send_command('ATH')
 
 def mute_call():
-    """Invariant: call in process; don't have to check connection."""
+    """Mutes any call in process.
+
+    Turns on muting for the current call in process. This method will only mute
+    a call if a call is in process.
+    """
     _send_command('AT+CMUT=1')
 
 def unmute_call():
-    """Invariant: call in process; don't have to check connection."""
+    """Turns off mute setting for a current call in process.
+
+    This method will only turn off the mute setting for a call that is in
+    process and will not do anything otherwise.
+    """
     _send_command('AT+CMUT=0')
 
-def play_audio(file_path):
-    """Intended to be used to play voicemail files"""
+def start_audio(file_path):
+    """TODO: instead of 50 default volume, save volume to a file"""
+    """Use the FONA device to begin playing an audio file, given its file path.
+
+    In order to play an audio file with the FONA device, a call cannot be in
+    progress. If this is the case, the command AT+CMEDPLAY=1 along with the
+    file path for the device, channel, and volume is written to the FONA device.
+    The audio file may be in the WAV, PCM, AMR, or MP3 format.
+
+    For the channel parameter, this method passes 0 for the main channel; 1
+    would be used for an aux channel.
+
+    This method's intended purpose is to play voicemail files.
+
+    Arg:
+        file_path (str): location of the audio file to be played
+    """
     check_connection()
     _send_command('AT+CMEDPLAY=1,' + file_path + ', 0, 50')
 
 def stop_audio(file_path):
-    """Intended to be used to play voicemail files"""
+    """Stop playing any audio file currently playing.
+
+    This method writes to the FONA device serial port the command for stopping
+    the audio file located at the given file path.
+
+    The audio file may be in the WAV, PCM, AMR, or MP3 format.
+
+    Arg:
+        file_path (str): location of the audio file to be played
+    """
     check_connection()
-    sleep(0.2)
     _send_command('AT+CMEDPLAY=0,' + file_path + ', 0, 50')
 
 def pause_audio(file_path):
-    """Intended to be used to play voicemail files"""
+    """Pause a playing audio file currently playing.
+
+    This method writes to the FONA device serial port the command for only
+    pausing a playing audio file located at the given file path.
+
+    The audio file may be in the WAV, PCM, AMR, or MP3 format.
+
+    Arg:
+        file_path (str): location of the audio file to be played
+    """
     check_connection()
     _send_command('AT+CMEDPLAY=2,' + file_path + ', 0, 50')
 
-def resume_audio(file_path):
-    """Intended to be used to play voicemail files"""
+def play_audio(file_path):
+    """Continue playing an audio file wherever it has been left off.
+
+    This method only writes to the FONA device port the command to continue
+    playing whichever audio file is saved at the given file path.
+
+    The audio file may be in the WAV, PCM, AMR, or MP3 format.
+
+    Arg:
+        file_path (str): location of the audio file to be played
+    """
     check_connection()
     _send_command('AT+CMEDPLAY=3,' + file_path + ', 0, 50')
 
 def set_audio_file_volume(volume):
+    """Sets the volume for playing an audio file only.
+
+    To set the volume used whenever an audio file is being played, this method
+    writes to the FONA port the command.
+
+    Arg:
+        volume (int): the volume level to be set (must be between 0 and 100
+        inclusive)
+
+    Raises:
+        ValueError if the value for volume is less than 0 or greater than 100
+    """
     if volume < 0 or volume > 100:
         raise ValueError('\n***\n*** Out of range value for volume\n***\n')
     check_connection()
     _send_command('AT+CMEDIAVOL=' + volume)
 
 def start_voice_recording():
+    """
+    """
     check_connection()
+    # format: AT+CREC=1, file_path, 1 (for WAV format), 0 (use int value for how long you want the recording to be), 0 (for FAT format), 3 (highest quality), 0 (MIC1)
     _send_command('AT+CREC=1')
 
 def set_speaker_volume(volume):
+    """Set volume for Raspberry Pi speakers.
+
+    Unlike the set_audio_file_volume method, this method sets the volume for
+    the entire phone's speakers. To do so, this method writes the ATL command
+    with the given volume parameter to the FONA device.
+
+    Arg:
+        volume (int): volume of the speakers to be set
+
+    Raises:
+        ValueError if the value for volume is less than 0 or greater than 9
+    """
     if volume < 0 or volume > 9:
         raise ValueError('\n***\n*** Out of range value for volume\n***\n')
     check_connection()
