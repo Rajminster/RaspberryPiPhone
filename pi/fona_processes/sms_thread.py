@@ -56,7 +56,6 @@ class SMS_Thread(Thread):
         """
         Thread.__init__(self)
         self.sms_signal = open('../message/sms_signal.txt', 'w+')
-        self.sms_signal.write('False')
         self.fona_lock = fona_lock
         self.sms_lock = sms_lock
         self.delay = delay
