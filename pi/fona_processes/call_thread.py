@@ -11,10 +11,10 @@ __version__ = '1.0'
 class Call_Thread(Thread):
     """Thread to continually poll the FONA device for incoming phone calls.
 
-    Whenever the RPi.GPIO.input method returns logical HIGH and the
-    fona_commands method message_received returns 0, there is an incoming call
-    to the FONA. The UI thread is signalled of this new call by writing to the
-    file call_signal.txt in the call application directory. Either True or False
+    Whenever the fona_commands.phone_status returns the string '3', this
+    indicates that the status of the phone is call incoming. Whenever this
+    occurs, the UI thread is signalled of this new call by writing to the file
+    call_signal.txt in the call application directory. Either True or False
     exists in this file for the UI thread to check.
 
     Once the UI thread has finished acknowledging the incoming call, it will also
@@ -64,17 +64,15 @@ class Call_Thread(Thread):
         Method which overrides the method run from threading.Thread. Called
         whenever the method start is called on an instance of Call_Thread. 
 
-        Using the RPi.GPIO.input and fona_commands.message_received methods, run
-        checks to see if the Raspberry Pi's input GPIO pin outputs a logical
-        HIGH and message_received outputs zero. If both of these are the case,
-        then there is an incoming call to the FONA. This method runs as soon as
-        the Raspberry Pi is powered on, and it will run for as long as it is on.
+        Using the fona_commands.phone_status method, run checks to see if
+        sending the FONA command for outputting phone status outputs the string
+        '3' which indicates there is an incoming call. This method runs as soon
+        as the Raspberry Pi is powered on, and it will run for as long as it is
+        on.
 
-        Every 'delay' seconds, the output of RPi.GPIO.input and
-        fona_commands.message_received are checked for logical HIGH and zero,
-        respectively. If both of these occur, this method signals the UI thread
-        that the FONA has an incoming call by writing to the call_signal.txt
-        file the string True.
+        Every 'delay' seconds, the output phone_status is checked for '3'. Once
+        this occurs, this method signals the UI thread that the FONA has an
+        incoming call by writing to the call_signal.txt file the string True.
 
         If the UI thread reads the call_signal.txt file for the phone
         application, it will see that it contains True if there is an incoming
