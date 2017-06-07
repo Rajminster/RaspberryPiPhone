@@ -32,10 +32,10 @@ def check_connection():
     """
     _send_command('AT')
     if 'OK' in _get_output():
-        print '\n***\n*** SUCCESSFUL connecting to FONA\n***\n'
+        print '\n***\n*** SUCCESSFUL connecting to FONA\n***'
     else:
-        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n'
-        raise IOError('\n***\n*** Unable connecting to FONA\n***\n')
+        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***'
+        raise IOError('\n***\n*** Unable connecting to FONA\n***')
 
 def check_output(output):
     """Checks if the FONA 2G device can be connected to successfully.
@@ -47,9 +47,9 @@ def check_output(output):
         IOError if the Raspberry Pi cannot connect to the FONA device
     """
     if output[len(output) - 1] != 'OK':
-        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***\n'
-        raise IOError('\n***\n*** Unable connecting to FONA\n***\n')
-    print '\n***\n*** SUCCESSFUL connecting to FONA\n***\n'
+        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***'
+        raise IOError('\n***\n*** Unable connecting to FONA\n***')
+    print '\n***\n*** SUCCESSFUL connecting to FONA\n***'
 
 def get_model():
     """Send ATI command to output the FONA identification information.
@@ -541,7 +541,7 @@ def set_audio_file_volume(volume):
         ValueError if the value for volume is less than 0 or greater than 100
     """
     if volume < 0 or volume > 100:
-        raise ValueError('\n***\n*** Out of range value for volume\n***\n')
+        raise ValueError('\n***\n*** Out of range value for volume\n***')
     check_connection()
     _send_command('AT+CMEDIAVOL=' + volume)
 
@@ -566,6 +566,6 @@ def set_speaker_volume(volume):
         ValueError if the value for volume is less than 0 or greater than 9
     """
     if volume < 0 or volume > 9:
-        raise ValueError('\n***\n*** Out of range value for volume\n***\n')
+        raise ValueError('\n***\n*** Out of range value for volume\n***')
     check_connection()
     _send_command('ATL' + volume)
