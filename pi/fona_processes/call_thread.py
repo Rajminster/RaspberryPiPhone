@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-from fona_commands import check_connection, sms_received
+from fona_commands import check_connection, phone_status
 from threading import Lock, Thread
 from time import sleep
-
-import RPi.GPIO as gpio
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-06-05'
@@ -91,7 +89,7 @@ class Call_Thread(Thread):
             try:
                 self.fona_lock.acquire()
                 check_connection()
-                if gpio.input(INPUT_PIN) and sms_received() == 0:
+                if phone_status() == '3':
                     self.call_lock.acquire()
                     self.call_signal.write('True')
                     self.call_lock.release()
