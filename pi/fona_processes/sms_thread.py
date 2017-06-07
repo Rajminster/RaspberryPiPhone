@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from fona_commands import check_connection, messages_received
+from fona_commands import check_connection, sms_received
 from threading import Lock, Thread
 from time import sleep
 
@@ -93,7 +93,7 @@ class SMS_Thread(Thread):
             try:
                 self.fona_lock.acquire()
                 check_connection()
-                if messages_received() > 0:
+                if sms_received() > 0:
                     self.sms_lock.acquire()
                     self.sms_signal.write('True')
                     self.sms_lock.release()
