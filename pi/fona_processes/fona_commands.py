@@ -137,7 +137,7 @@ def get_battery_percentage():
     _send_command('AT+CBC')
     return _get_output()
 
-def send_message(number, message):
+def send_sms(number, message):
     """Send an SMS to the phone number which is given by the string parameter
     number.
 
@@ -145,7 +145,7 @@ def send_message(number, message):
     successful, the AT command for changing the message type (AT+CMGF) is
     written to the FONA device. When entering this command in the FONA terminal,
     this allows the text directly typed in the terminal to be used as the
-    message to be sent. The command for setting the phone number to be texted is
+    SMS to be sent. The command for setting the phone number to be texted is
     written, using the number parameter, followed by writing the message to the
     FONA device; this is why changing the text type was required. Finally the
     CTRL-Z signal is sent, escaping the direct message entry and sending the
@@ -155,7 +155,8 @@ def send_message(number, message):
         number (str): string of the phone number to send the message to. NOTE:
         the number which is the intended recipient must have the appropriate
         international code
-        message (str): the message to be sent to the phone number
+        message (str): the message part of the SMS to be sent to the phone
+        number
     """
     check_connection()
     _send_command('AT+CMGF=1')
@@ -163,38 +164,37 @@ def send_message(number, message):
     _send_command(message)
     _send_end_signal()
 
-def message_received():
-    """Determines if any new messages have been sent to the FONA device.
+def sms_received():
+    """Determines if any new SMSs have been sent to the FONA device.
 
-    To determine if any new message has been received, this method first checks
-    FONA connection. If successful, it writes to the FONA serial port the AT
-    command which outputs the number of total messages received. The _get_output
-    method will return a string array whose second index contains the number of
-    received messages.
+    To determine if any new SMS has been received, this method first checks FONA
+    connection. If successful, it writes to the FONA serial port the AT command
+    which outputs the number of total SMSs received. The _get_output method
+    will return a string array whose second index contains the number of
+    received SMSs.
 
-    This value is the total number of messages received, according to the FONA
-    device; however, it is not the total number of messages accounted for (or
-    recorded). To save the number of messages accounted for (non-new), we save
-    the current value of messages received to a file (if it's greater than the
-    number of recorded messages). Initially, this file will be empty, so the
-    value for this variable is assumed to be zero.
+    This value is the total number of SMSs received, according to the FONA
+    device; however, it is not the total number of SMSs accounted for (or
+    recorded). To save the number of SMSs accounted for (non-new), we save the
+    current value of SMSs received to a file (if it's greater than the number of
+    recorded SMSs). Initially, this file will be empty, so the value for this
+    variable is assumed to be zero.
 
-    At any point in calling this method, the number of messages received will
-    always be greater than or equal to the number of messages recorded. If the
-    number of messages received by the FONA is greater than the number of
-    messages recorded, then new messages have been received. This is why the
-    max of number of messages received and number recorded is the new value for
-    number of messages recorded.
+    At any point in calling this method, the number of SMSs received will always
+    be greater than or equal to the number of SMSs recorded. If the number of
+    SMSs received by the FONA is greater than the number of SMSs recorded, then
+    new SMSs have been received. This is why the max of number of SMSs received
+    and number recorded is the new value for number of SMSs recorded.
 
-    This method returns the difference between number of messages received by
-    the FONA and number of messages recorded. If no new messages have been
-    received, the number of messages received and the number of messages
-    recorded will be equal, meaning this method will return zero to indicate no
-    new messages; otherwise this method will return the number of new messages.
+    This method returns the difference between number of SMSs received by the
+    FONA and number of SMSs recorded. If no new SMSs have been received, the
+    number of SMSs received and the number of SMSs recorded will be equal,
+    meaning this method will return zero to indicate no new SMSs; otherwise this
+    method will return the number of new SMSs.
 
     Returns:
-        If any new messages have been received, this method returns non zero
-        (the number of new messages unaccounted for); otherwise it returns zero
+        If any new SMSs have been received, this method returns non zero (the
+        number of new SMSs unaccounted for); otherwise it returns zero
     """
     check_connection()
     _send_command('AT+CPMS?')
@@ -246,29 +246,29 @@ def _parse_message(output):
     return message[:-2]
 
 def get_all_sms():
-    """Returns array of number, timestamp, message tuples for all messages
-    received by the FONA device with successful connection to Raspberry Pi.
+    """Returns array of number, timestamp, message tuples for all SMSs received
+    by the FONA device with successful connection to Raspberry Pi.
 
-    In order to get any message received with useful metadata, first two
-    commands must be sent to the FONA device: AT+CMGF=1 which sets SMS message
-    format to text and AT+CSDH=1 which shows SMS text mode metadata (timestamp
-    received, sender phone number, message contents, etc.).
+    In order to get any SMS received with useful metadata, first two commands
+    must be sent to the FONA device: AT+CMGF=1 which sets SMS message format to
+    text and AT+CSDH=1 which shows SMS text mode metadata (timestamp received,
+    sender phone number, message contents, etc.).
 
     With this setup, the AT+CPMS command is sent which outputs the total number
-    of SMS received which is used to iterate through each message received. To
-    output the ith message received, the AT+CMGR=i command is sent, and with the
-    first two commands sent, the FONA device outputs clear metadata about the
-    SMS which is appended to the array to be returned.
+    of SMSs received which is used to iterate through each SMS received. To
+    output metadata about the ith SMS received, the AT+CMGR=i command is sent,
+    and with the first two commands sent, the FONA device outputs clear metadata
+    about the ith SMS which is appended to the tuple array to be returned.
 
-    In this method, the total number of messages received is indexed as the
-    fifth element of the _get_output string array because before the AT+CPMS?
-    command was entered, two other commands were entered which each take two
-    indices in the array. NOTE: the FONA device does not use zero-indexing when
-    outputting messages received.
+    In this method, the total number of SMSs received is indexed as the fifth
+    element of the _get_output string array because before the AT+CPMS? command
+    was entered, two other commands were entered which each take two indices in
+    the array. NOTE: the FONA device does not use zero-indexing when outputting
+    SMSs received.
 
     Returns:
         Array of sender phone number, SMS timestamp, and message tuples of all
-        messages received by the FONA device
+        SMSs received by the FONA device
     """
     check_connection()
     _send_command('AT+CMGF=1')
@@ -285,34 +285,32 @@ def get_all_sms():
     return messages
 
 def get_new_sms():
-    """Returns array of number, timestamp, message tuples for all messages which
+    """Returns array of number, timestamp, message tuples for all SMSs which
     have been recently received by the FONA which have just been accounted for
-    in the message_received method.
+    in the sms_received method.
 
-    This method first calls the message_received method which ensures a
-    successful connection exists between the FONA device and the Raspberry Pi
-    as well as find out how many messages have been marked as 'new'. After this,
-    the method writes the AT+CMGF=1 command to set the SMS message format to
-    text to make message output legible. Next it writes the AT+CSDH=1 command
-    which makes the FONA console output more detailed metadata about messages
-    received.
+    This method first calls the sms_received method which ensures a successful
+    connection exists between the FONA device and the Raspberry Pi as well as
+    find out how many SMSs have been marked as 'new'. After this, the method
+    writes the AT+CMGF=1 command to set the SMS message format to text to make
+    message output legible. Next it writes the AT+CSDH=1 command which makes the
+    FONA console output more detailed metadata about SMSs received.
 
-    The command to output the total number of messages received is then entered
-    to only grab the newest received to return. This value is obtained by
-    indexing into the fifth element of the _get_output string array because it's
-    the output of the third command entered; since each command requires two
-    indices of the _get_output array (one for the command and one for its
-    output), it's the sixth place (5 when zero-indexed).
+    The command to output the total number of SMSs received is then entered to
+    only grab the newest received to return. This value is obtained by indexing
+    into the fifth element of the _get_output string array because it's the
+    output of the third command entered; since each command requires two indices
+    of the _get_output array (one for the command and one for its output), it's
+    the sixth place (5 when zero-indexed).
 
-    Now the method iterates through the new messages received and appends those
+    Now the method iterates through the new SMSs received and appends those
     to the array to be returned with metadata phone number of sender, timestamp
-    of message, and message contents. NOTE: the FONA does not zero-index
-    messages received, so 1 is added to the lower and upper bound of the for
-    loop.
+    of message, and message contents. NOTE: the FONA does not zero-index SMSs
+    received, so 1 is added to the lower and upper bound of the for loop.
 
     Returns:
         Array of sender phone number, message timestamp, and message contents
-        tuples for new messages received
+        tuples for new SMSs received
     """
     new_received = message_received()
     _send_command('AT+CMGF=1')
@@ -330,32 +328,32 @@ def get_new_sms():
 
 def get_n_newest_sms(n):
     """Returns array of sender phone number, timestamp, and message content
-    tuples of the n newest received messages.
+    tuples of the n newest received SMSs.
 
     This is accomplished by first checking for an existing connection between
     the Raspberry Pi and the FONA device. This method then writes the AT+CPMS?
-    command to output the total number of messages received in order to error
-    check the n argument. After this, commands for setting SMS message format
-    and output detailed SMS metadata are entered (AT+CMGF=1 and AT+CSDH=1,
+    command to output the total number of SMSs received in order to error check
+    the n argument. After this, commands for setting SMS message format and
+    output detailed SMS metadata are entered (AT+CMGF=1 and AT+CSDH=1,
     respectively). Because the output from these two commands are not necessary,
     this method calls the _get_output method in order to flush the FONA serial
     port's output.
 
-    Now the method iterates through the n newest messages and appends their
-    sender phone number, message timestamp, and message contents to the array it
-    will return. NOTE: the FONA does not zero-index messages received, so 1 is
-    added to the lower and upper bounds of the for loop.
+    Now the method iterates through the n newest SMSs and appends their sender
+    phone number, message timestamp, and message contents to the array it will
+    return. NOTE: the FONA does not zero-index SMSs received, so 1 is added to
+    the lower and upper bounds of the for loop.
 
     Arg:
-        n (int): the number of newest messages to return
+        n (int): the number of newest SMSs to return
 
     Raises:
         ValueError if the value for n is less than 1 or greater than the number
-        of messages received
+        of SMSs received
 
     Returns:
         Array of sender phone number, message timestamp, and message contents
-        tuples for newest messages received
+        tuples for newest SMSs received
     """
     check_connection()
     _send_command('AT+CPMS?')
@@ -376,32 +374,32 @@ def get_n_newest_sms(n):
 
 def get_n_oldest_sms(n):
     """Returns array of sender phone number, timestamp, and message content
-    tuples of the n oldest received messages.
+    tuples of the n oldest received SMSs.
 
     This is accomplished by first checking for an existing connection between
     the Raspberry Pi and the FONA device. This method then writes the AT+CPMS?
-    command to output the total number of messages received in order to error
-    check the n argument. After this, commands for setting SMS message format
-    and output detailed SMS metadata are entered (AT+CMGF=1 and AT+CSDH=1,
+    command to output the total number of SMSs received in order to error check
+    the n argument. After this, commands for setting SMS message format and
+    output detailed SMS metadata are entered (AT+CMGF=1 and AT+CSDH=1,
     respectively). Because the output from these two commands are not necessary,
     this method calls the _get_output method in order to flush the FONA serial
     port's output.
 
-    Now the method iterates through the n oldest messages and appends their
-    sender phone number, message timestamp, and message contents to the array it
-    will return. NOTE: the FONA does not zero-index messages received, so 1 is
-    added to the lower and upper bounds of the for loop.
+    Now the method iterates through the n oldest SMSs and appends their sender
+    phone number, message timestamp, and message contents to the array it will
+    return. NOTE: the FONA does not zero-index SMSs received, so 1 is added to
+    the lower and upper bounds of the for loop.
 
     Arg:
-        n (int): the number of oldest messages to return
+        n (int): the number of oldest SMSs to return
 
     Raises:
         ValueError if the value for n is less than 1 or greater than the number
-        of messages received
+        of SMSs received
 
     Returns:
         Array of sender phone number, message timestamp, and message contents
-        tuples for oldest messages received
+        tuples for oldest SMSs received
     """
     check_connection()
     _send_command('AT+CPMS?')
