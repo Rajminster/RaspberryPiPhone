@@ -1,74 +1,106 @@
-#!/usr/bin/python
-# sms_thread.py
+#!/usr/bin/env python
 
-from threading import Thread
-import fona
-import RPi.GPIO as gsm
+from fona_commands import check_connection, messages_received
+from threading import Lock, Thread
+from time import sleep
+
+__author__ = 'Nikola Istvanic'
+__date__ = '2017-06-05'
+__version__ = '1.0'
 
 class SMS_Thread(Thread):
-    """Thread to continually poll the GSM if a message was received.
+    """Thread to continually poll the FONA device if an SMS was received.
 
-    Whenever the GSM's input pin outputs a logical HIGH, then either a message
-    or call has been received. In order to determine which has been received,
-    the number of messages received before checking is compared with the current
-    number of messages received. If this new value is greater, then a new SMS
-    has been receieved, and the UI thread is informed via file in the UI
-    directory.
+    Whenever the fona_commands method message_received returns a number greater
+    than 0, new messages have arrived to the FONA. The UI thread is signalled of
+    a new message by writing to the file sms_signal.txt in the message
+    application directory. Either True or False exists in this file so that if a
+    message has been received and in the time it takes to check sms_signal.txt a
+    new message is received, the UI thread does not need to worry about the
+    number of new messages received but rather the fact that there are new
+    messages.
 
-    Attributes:
-        sms_received (int): number of SMSs ever received (used to determine if a
-        call or message was received). Value must be saved to a file
-        file (File): file where the number of SMS messages received is saved
-        signal (File): file where this thread signals if a call is incoming
+    Once the UI thread has finished acknowledging the new messages, it will also
+    write to the sms_signal.txt file. It will write False to signal to itself
+    that no new messages have arrived.
+
+    Since two threads will be writing to the same resource, a lock is needed for
+    writing to sms_signal.txt. Since the SMS thread calls methods in
+    fona_commands, it will be writing to the FONA device serial port.
+    Concurrently, the UI thread will most likely be writing to the FONA various
+    commands as a part of regular operation. Because of this, another threading
+    lock is required to maintain the shared FONA port resource.
+
+    Attribute:
+        sms_signal (File): file whose contents signals if an SMS has been
+        received. If there are messages which the UI has not yet acknowledged,
+        this file should contain the string True; once the UI thread has
+        finished acknowledging these new messages, it should write to this file
+        False
     """
-    def __init__(self, sLock, delay=5):
+
+    def __init__(self, fona_lock, sms_lock, delay=5):
         """Constructor for SMS_Thread object.
+
+        Class which inherits from threading.Thread. Constructor to setup class
+        variables and open sms_signal.txt file for communication between the
+        SMS_Thread and the UI_Thread classes.
        
         Args:
-            Lock (threading.Lock): lock in order to write commands to the FONA
-            from this thread and the SMS thread
+            fona_lock (threading.Lock): lock in order to write commands to the
+            FONA port from this thread, the call thread, and the UI thread
+            sms_lock (threading.Lock): lock in order to write to the
+            sms_signal.txt file from SMS_Thread and UI_Thread
             delay (int): amount of time to pass between checks (default is 5
             seconds)
         """
         Thread.__init__(self)
-        self.file = open('sms_received.txt', 'w+')
-        self.signal = open('../message/signal.txt', 'w+')
-        self.signal.write('False')
-        try:
-            self.sms_received = int(self.file.readline())
-        except ValueError:
-            """ empty file """
-            self.sms_received = 0
-            self.file.write(str(self.sms_received))
-        self.sLock = sLock
+        self.sms_signal = open('../message/sms_signal.txt', 'w+')
+        self.sms_signal.write('False')
+        self.fona_lock = fona_lock
+        self.sms_lock = sms_lock
         self.delay = delay
 
     def run(self):
-        """Method to continually poll if the GSM received any SMS messages.
+        """Continually poll the FONA device to see if any new messages have been
+        received.
 
-        Every 'delay' seconds, this method checks the GSM for if a new message
-        has been received. A new message has been received whenever the GSM's
-        input pin outputs a logical HIGH and when the number of messages
-        received before the check is less than the number after the check. Once
-        a message is received, the UI thread is signalled through local file.
+        Method which overrides the method run from threading.Thread. Called
+        whenever the method start is called on an instance of SMS_Thread. 
+
+        Using the fona_commands.message_received method, run checks to see if
+        message_received outputs a number greater than zero. The output of
+        message_rceeived is the number of new messages received (new in the
+        sense that the UI thread has not accounted for these messages). This
+        method runs as soon as the Raspberry Pi is powered on, and it will run
+        for as long as it is on.
+
+        Every 'delay' seconds, the output of fona_commands.message_received is
+        checked for greater than zero. If the number of messages received is
+        greater than zero, then new messages have been received by the FONA;
+        this method signals the UI thread of the presence of these new messages
+        by writing to the sms_signal.txt file the string True.
+
+        If the UI thread reads the sms_signal.txt file for the messages
+        application, it will see that it contains True if new messages have been
+        received. If this is the case, then the UI thread should perform any
+        necessary tasks for updating any type of display for signalling to the
+        user of new messages. Once this process is done, the UI thread should
+        then acquire the threading lock for the sms_signal.txt file and write
+        the string False so that whenever it checks the sms_signal.txt file
+        again, it will be accurate.
         """
         while True:
             try:
-                self.sLock.acquire()
-                fona.check_connection()
-                # if logical HIGH received then a call or message was received
-                if gsm.input(INPUT_PIN):
-                    # get number of SMSs
-                    fona.send_command('AT+CPMS?\r')
-                    num = int(fona.get_output()[1].split(',')[1])
-                    """ determine if a call was received (num would greater than sms_received) """
-                    if num > self.sms_received:
-                        self.sms_received = num
-                        self.file.write(str(self.sms_received)) # overwrite old value
-                        self.signal.write('True')
+                self.fona_lock.acquire()
+                check_connection()
+                if messages_received() > 0:
+                    self.sms_lock.acquire()
+                    self.sms_signal.write('True')
+                    self.sms_lock.release()
             except:
                 print '***\n*** Error communicating with FONA\n***'
-                ###################### TODO handle/signal UI thread ######################
+                ################# TODO handle/signal UI thread #################
             finally:
-                self.sLock.release()
+                self.fona_lock.release()
             sleep(self.delay)
