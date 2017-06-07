@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from fona_commands import check_connection, phone_status
-from threading import Lock, Thread
+from threading import Thread
 from time import sleep
 
 __author__ = 'Nikola Istvanic'
