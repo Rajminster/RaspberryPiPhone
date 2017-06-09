@@ -55,7 +55,7 @@ class SMS_Thread(Thread):
             seconds)
         """
         Thread.__init__(self)
-        self.sms_signal = open('../message/sms_signal.txt', 'w+')
+        self.sms_signal = open('sms_signal.txt', 'w+')
         self.fona_lock = fona_lock
         self.sms_lock = sms_lock
         self.delay = delay
@@ -96,6 +96,7 @@ class SMS_Thread(Thread):
                 if sms_received() > 0:
                     self.sms_lock.acquire()
                     self.sms_signal.write('True')
+                    self.sms_signal.seek(0)
                     self.sms_lock.release()
             except:
                 print '***\n*** Error communicating with FONA\n***'
