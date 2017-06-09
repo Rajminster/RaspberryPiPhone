@@ -52,7 +52,7 @@ class Call_Thread(Thread):
             seconds)
         """
         Thread.__init__(self)
-        self.call_signal = open('../phone/call_signal.txt', 'w+')
+        self.call_signal = open('call_signal.txt', 'w+')
         self.fona_lock = fona_lock
         self.call_lock = call_lock
         self.delay = delay
@@ -90,6 +90,7 @@ class Call_Thread(Thread):
                 if phone_status() == '3':
                     self.call_lock.acquire()
                     self.call_signal.write('True')
+                    self.call_signal.seek(0)
                     self.call_lock.release()
             except:
                 print '\n***\n*** Error communicating with FONA\n***'
