@@ -38,50 +38,105 @@ class UI_Thread(Thread):
             fona_lock (threading.Lock): lock used to make sure only one of the
             thread classes defined in fona_processes directory writes to the
             FONA serial port at a time
+            call_lock (threading.Lock): lock used to make sure only one of
+            either UI_Thread or Call_Thread writes to the call_signal.txt file
+            sms_lock (threading.Lock): lock used to make sure only one of either
+            UI_Thread or SMS_Thread writes to the sms_signal.txt file
         """
         self.fona_lock = fona_lock
         self.call_lock = call_lock
         self.sms_lock = sms_lock
 
-    def _call_incoming(self):
+    def _check_call_signal(self):
+        """Checks the call_signal.txt file to see if the Call_Thread background
+        thread has detected an incoming call.
+
+        The file call_signal.txt should only contain one line which is either
+        True or False. If the line is True, then the Call_Thread has edited this
+        file because there is an incoming call to the FONA device; otherwise,
+        there is no incoming call to the FONA device.
+
+        Returns:
+            True if the first line of the call_signal.txt file contains True
+            which indicates there is an incoming call; False otherwise to
+            indicate that there is no incoming call
         """
-        """
-        return open('../phone/call_signal.txt', 'r').readline() == 'True'
+        return open('call_signal.txt', 'r').readline() == 'True'
 
     def _update_call_file(self):
+        """Helper method to write to the call_signal.txt file False from this
+        thread to indicate the incoming call is going to be tended to.
+
+        This method first opens the call_signal.txt to write the string False to
+        it. It then will block until it acquires the call_lock which it shares
+        with the Call_Thread object. The line is written, the lock is released,
+        and the file is closed. After this method, the UI should be altered as a
+        result of this incoming call.
         """
-        """
-        file = open('../phone/call_signal.txt', 'w+')
+        file = open('call_signal.txt', 'w+')
         self.call_lock.acquire()
         file.write('False')
         self.call_lock.release()
         file.close()
 
-    def handle_call(self):
+    def check_call(self):
+        """Uses the _check_call_signal method to see if the Call_Thread has
+        detected any incoming phone call.
+
+        If the call_signal.txt file contains True, the file will be updated to
+        contain False, and UI elements should be updated to tell the user of the
+        incoming call. Otherwise, nothing will happen.
         """
-        """
-        if _call_incoming():
+        if _check_call_signal():
             _update_call_file()
+            #################### TODO ####################
             # handle changing GUI to handle an incoming call
             # is file.close() required or will it break things?
+            ##############################################
 
-    def _sms_incoming(self):
+    def _check_sms_signal(self):
+        """Checks the sms_signal.txt file to see if the SMS_Thread background
+        thread has detected incoming SMSs.
+
+        The file sms_signal.txt should only contain one line which is either
+        True or False. If the line is True, then the SMS_Thread has edited this
+        file because there is are incoming SMSs to the FONA device; otherwise,
+        there are no SMSs received by the FONA device.
+
+        Returns:
+            True if the first line of the sms_signal.txt file contains True
+            which indicates there are incoming SMSs; False otherwise to
+            indicate that there are no incoming SMSs
         """
-        """
-        return open('../message/sms_signal.txt', 'r').readline() == 'True'
+        return open('sms_signal.txt', 'r').readline() == 'True'
 
     def _update_sms_file(self):
+        """Helper method to write to the sms_signal.txt file False from this
+        thread to indicate the UI has acknowledged the incoming SMSs.
+
+        This method first opens the sms_signal.txt to write the string False to
+        it. It then will block until it acquires the sms_lock which it shares
+        with the SMS_Thread object. The line is written, the lock is released,
+        and the file is closed. After this method, the UI should be altered as a
+        result of incoming SMSs.
         """
-        """
-        file = open('../message/sms_signal.txt', 'w+')
+        file = open('sms_signal.txt', 'w+')
         self.call_lock.acquire()
         file.write('False')
         self.call_lock.release()
         file.close()
 
-    def handle_sms(self):
+    def check_sms(self):
+        """Uses the _check_sms_signal method to see if the SMS_Thread has
+        detected any incoming SMSs.
+
+        If the sms_signal.txt file contains True, the file will be updated to
+        contain False, and UI elements should be updated to tell the user of the
+        new SMSs. Otherwise, nothing will happen.
         """
-        """
-        if _sms_incoming():
+        if _check_sms_signal():
             _update_sms_file()
-            # handle changing GUI to handle an incoming sms
+            #################### TODO ####################
+            # handle changing GUI to handle an incoming call
+            # is file.close() required or will it break things?
+            ##############################################
