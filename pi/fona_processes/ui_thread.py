@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from threading import Thread
+from time import sleep
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-06-05'
@@ -31,7 +32,7 @@ class UI_Thread(Thread):
     which will dictate the appearance of the screen.
     """
 
-    def __init__(self, fona_lock, call_lock, sms_lock):
+    def __init__(self, fona_lock, call_lock, sms_lock, delay=5):
         """Constructor for UI_Thread object.
 
         Args:
@@ -42,10 +43,20 @@ class UI_Thread(Thread):
             either UI_Thread or Call_Thread writes to the call_signal.txt file
             sms_lock (threading.Lock): lock used to make sure only one of either
             UI_Thread or SMS_Thread writes to the sms_signal.txt file
+            delay (float): amount of time to delay between checking the
+            call_signal.txt and sms_signal.txt files (default is 5)
         """
         self.fona_lock = fona_lock
         self.call_lock = call_lock
         self.sms_lock = sms_lock
+        self.delay = delay
+        #################### TODO ####################
+        # self.display_boot_screen()
+        ##############################################
+
+    def display_boot_screen(self):
+        """Display the boot loading screen while setting up hardware/software."""
+        pass
 
     def _check_call_signal(self):
         """Checks the call_signal.txt file to see if the Call_Thread background
@@ -87,8 +98,8 @@ class UI_Thread(Thread):
         contain False, and UI elements should be updated to tell the user of the
         incoming call. Otherwise, nothing will happen.
         """
-        if _check_call_signal():
-            _update_call_file()
+        if self._check_call_signal():
+            self._update_call_file()
             #################### TODO ####################
             # handle changing GUI to handle an incoming call
             # is file.close() required or will it break things?
@@ -134,9 +145,21 @@ class UI_Thread(Thread):
         contain False, and UI elements should be updated to tell the user of the
         new SMSs. Otherwise, nothing will happen.
         """
-        if _check_sms_signal():
-            _update_sms_file()
+        if self._check_sms_signal():
+            self._update_sms_file()
             #################### TODO ####################
             # handle changing GUI to handle an incoming call
             # is file.close() required or will it break things?
             ##############################################
+
+    def run(self):
+        """Method this thread runs whenever the Raspberry Pi is powered on.
+
+        Continually check the call_signal.txt and sms_signal.txt files to see
+        if there is any incoming call or are any incoming SMSs; update the UI as
+        needed. Repeat this process every 'delay' seconds.
+        """
+        while True:
+            self.check_call()
+            self.check_sms()
+            sleep(self.delay)
