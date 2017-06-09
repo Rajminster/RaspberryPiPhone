@@ -28,15 +28,23 @@ class Call_Thread(Thread):
     commands as a part of regular operation. Because of this, another threading
     lock is required to maintain the shared FONA port resource.
 
-    Attribute:
+    Attributes:
         call_signal (File): file whose contents signals if an incoming call has
         been received. If there are messages which the UI has not yet
         acknowledged, this file should contain the string True; once the UI
         thread has finished acknowledging these new messages, it should write to
         this file False
+        RINGING (str): string of the number 3. Whenever the AT+CPAS command is
+        written to the FONA serial port, the FONA will output the status of the
+        phone (reading, call in progress, call incoming, unknown). The value for
+        the call incoming state is 3, and the output of the FONA will be a
+        string. Whenever checking for an incoming call, the output of the FONA
+        is checked against the RINGING constant. 
     """
 
-    def __init__(self, fona_lock, call_lock, delay=2):
+    RINGING = '3'
+
+    def __init__(self, fona_lock, call_lock, delay=5):
         """Constructor for Call_Thread object.
 
         Class which inherits from threading.Thread. Constructor to setup class
@@ -48,7 +56,7 @@ class Call_Thread(Thread):
             FONA port from this thread, the SMS thread, and the UI thread
             call_lock (threading.Lock): lock in order to write to the
             call_signal.txt file from Call_Thread and UI_Thread
-            delay (int): amount of time to pass between checks (default is 2
+            delay (int): amount of time to pass between checks (default is 5
             seconds)
         """
         Thread.__init__(self)
@@ -87,7 +95,7 @@ class Call_Thread(Thread):
             try:
                 self.fona_lock.acquire()
                 check_connection()
-                if phone_status() == '3':
+                if phone_status() == RINGING:
                     self.call_lock.acquire()
                     self.call_signal.write('True')
                     self.call_signal.seek(0)
