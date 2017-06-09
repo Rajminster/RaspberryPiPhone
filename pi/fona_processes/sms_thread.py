@@ -51,7 +51,7 @@ class SMS_Thread(Thread):
             FONA port from this thread, the call thread, and the UI thread
             sms_lock (threading.Lock): lock in order to write to the
             sms_signal.txt file from SMS_Thread and UI_Thread
-            delay (int): amount of time to pass between checks (default is 5
+            delay (float): amount of time to pass between checks (default is 5
             seconds)
         """
         Thread.__init__(self)
