@@ -12,7 +12,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.image import AsyncImage
+from kivy.uix.image import AsyncImage, Image
 from kivy.uix.label import Label
 
 
@@ -20,6 +20,7 @@ class HomeScreenApp(App):
     def build(self):
         # the root is created in pictures.kv
         root = GridLayout(cols=3)
+        root.spacing = [10,-300]
         Window.size = (480, 800)
         Window.fullscreen = False
 
@@ -28,7 +29,8 @@ class HomeScreenApp(App):
         for filename in glob(join(curdir, 'home_UI', '*')):
             try:
                 # load the image
-                image = AsyncImage(source=filename, allow_stretch=True)
+                image = Image(source=filename, allow_stretch=False)
+                image.size = [0.5,0.5]
                 # add to the main field
                 root.add_widget(image)
             except Exception as e:
