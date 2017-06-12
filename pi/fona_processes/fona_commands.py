@@ -51,6 +51,20 @@ def check_output(output):
         raise IOError('\n***\n*** Unable connecting to FONA\n***')
     print '\n***\n*** SUCCESSFUL connecting to FONA\n***'
 
+def get_time():
+    """
+    """
+    check_connection()
+    _send_command('AT+CIPGSMLOC=1,1')
+    return _get_output()
+
+def get_lat_long():
+    """
+    """
+    check_connection()
+    _send_command('AT+CIPGSMLOC=1,1')
+    return _get_output()
+
 def get_model():
     """Send ATI command to output the FONA identification information.
 
@@ -418,6 +432,32 @@ def get_n_oldest_sms(n):
         messages['message'].append(_parse_message(output))
     return messages
 
+def phone_status():
+    """Output the status of the phone activity.
+
+    To output the status, this method first checks the connection between the
+    Raspberry Pi and the FONA device. If there exists a secure connection, then
+    this method will send the command AT+CPAS which makes the FONA device output
+    the status of the phone. Depending on the output of this method, it can be
+    determined if there is an incoming call to the FONA, no calls, or a call in
+    process.
+
+    After writing the AT+CPAS command to the FONA device, its output is in the
+    format:
+        ['AT+CPAS', '+CPAS: 0', '', 'OK']
+    So the second element of the string array, second element on the split of
+    whitespace is returned. If this value is a 0, then this means there are no
+    calls occurring or incoming. 2 means the status is unknown. 3 means there is
+    an incoming call, 4 means there is a call in progress.
+
+    Returns:
+        String of the current status of phone activity. Values can only be 0, 2,
+        3, or 4
+    """
+    check_connection()
+    _send_command('AT+CPAS')
+    return _get_output()[1].split(' ')[1]
+
 def call_number(number):
     """Call the phone number parameter.
 
@@ -483,7 +523,7 @@ def start_audio(file_path):
         file_path (str): location of the audio file to be played
     """
     check_connection()
-    _send_command('AT+CMEDPLAY=1,' + file_path + ', 0, 50')
+    _send_command('AT+CMEDPLAY=1,' + file_path + ',0,50')
 
 def stop_audio(file_path):
     """Stop playing any audio file currently playing.
@@ -497,7 +537,7 @@ def stop_audio(file_path):
         file_path (str): location of the audio file to be played
     """
     check_connection()
-    _send_command('AT+CMEDPLAY=0,' + file_path + ', 0, 50')
+    _send_command('AT+CMEDPLAY=0,' + file_path + ',0,50')
 
 def pause_audio(file_path):
     """Pause a playing audio file currently playing.
@@ -511,7 +551,7 @@ def pause_audio(file_path):
         file_path (str): location of the audio file to be played
     """
     check_connection()
-    _send_command('AT+CMEDPLAY=2,' + file_path + ', 0, 50')
+    _send_command('AT+CMEDPLAY=2,' + file_path + ',0,50')
 
 def play_audio(file_path):
     """Continue playing an audio file wherever it has been left off.
@@ -525,7 +565,7 @@ def play_audio(file_path):
         file_path (str): location of the audio file to be played
     """
     check_connection()
-    _send_command('AT+CMEDPLAY=3,' + file_path + ', 0, 50')
+    _send_command('AT+CMEDPLAY=3,' + file_path + ',0,50')
 
 def set_audio_file_volume(volume):
     """Sets the volume for playing an audio file only.
@@ -569,3 +609,13 @@ def set_speaker_volume(volume):
         raise ValueError('\n***\n*** Out of range value for volume\n***')
     check_connection()
     _send_command('ATL' + volume)
+
+##########################################################################$
+# AT+CFUN=? set phone functionality (IE airplane mode on/off)
+# AT+CMEE=1 error display related
+# AT+CCLK="yy/MM/dd,hh:mm:ss+-zz" set clock
+# AT+CIFSR get local IP address
+#
+# AT+CMMSINIT initialize MMS function
+# AT+CMMSCURL="link" sets MMS center based on URL
+###########################################################################
