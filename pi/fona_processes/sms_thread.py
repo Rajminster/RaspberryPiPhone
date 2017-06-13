@@ -94,6 +94,7 @@ class SMS_Thread(Thread):
                 self.fona_lock.acquire()
                 check_connection()
                 if sms_received() > 0:
+                    print '\n***\n*** SMS RECEIVED\n***'
                     self.sms_lock.acquire()
                     self.sms_signal.write('True')
                     self.sms_signal.seek(0)
