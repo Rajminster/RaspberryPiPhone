@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from fona_commands import check_connection, phone_status
 from threading import Thread
 from time import sleep
 
@@ -7,181 +8,102 @@ __author__ = 'Nikola Istvanic'
 __date__ = '2017-06-05'
 __version__ = '1.0'
 
-class UI_Thread(Thread):
-    """Thread class to create and display the UI of the Raspberry Pi Phone.
+class Call_Thread(Thread):
+    """Thread to continually poll the FONA device for incoming phone calls.
 
-    Whenever the Raspberry Pi is booted, it needs two threads to continually
-    poll the FONA device for calls and SMSs. Since both of these operations
-    require writing commands to the FONA device, a lock for the FONA device is
-    needed. Both of these threads also write to their own signal files. Because
-    this thread also writes to those files, locks are needed for both files.
+    Whenever the fona_commands.phone_status returns the string '3', this
+    indicates that the status of the phone is call incoming. Whenever this
+    occurs, the UI thread is signalled of this new call by writing to the file
+    call_signal.txt in the call application directory. Either True or False
+    exists in this file for the UI thread to check.
 
-    Since this thread will also call methods defined in the fona_commands
-    library, it will also need to write commands to the FONA device, so it
-    should have a lock for the FONA.
+    Once the UI thread has finished acknowledging the incoming call, it will also
+    write to the call_signal.txt file. It will write False to signal to itself
+    that there are no incoming calls.
 
-    This class defines methods which act between the FONA device and elements of
-    the UI: methods which check for output from the FONA to determine whether or
-    not a call is incoming and then alter elements of the UI accordingly.
+    Since two threads will be writing to the same resource, a lock is needed for
+    writing to call_signal.txt. Since the call thread calls methods in
+    fona_commands, it will be writing to the FONA device serial port.
+    Concurrently, the UI thread will most likely be writing to the FONA various
+    commands as a part of regular operation. Because of this, another threading
+    lock is required to maintain the shared FONA port resource.
 
-    From this thread, all of the UI elements are created and loaded. In this
-    file there are methdos which create initial elements of the UI, but it also
-    contains that load other elements defined elsewhere. For example, when
-    booting, this class will load only the initial graphics for starting up, but
-    after that it will load and hand over control to the homescreen UI element
-    which will dictate the appearance of the screen.
+    Attributes:
+        call_signal (File): file whose contents signals if an incoming call has
+        been received. If there are messages which the UI has not yet
+        acknowledged, this file should contain the string True; once the UI
+        thread has finished acknowledging these new messages, it should write to
+        this file False
+        RINGING (str): string of the number 3. Whenever the AT+CPAS command is
+        written to the FONA serial port, the FONA will output the status of the
+        phone (reading, call in progress, call incoming, unknown). The value for
+        the call incoming state is 3, and the output of the FONA will be a
+        string. Whenever checking for an incoming call, the output of the FONA
+        is checked against the RINGING constant. 
     """
 
-    def __init__(self, fona_lock, call_lock, sms_lock, delay=5):
-        """Constructor for UI_Thread object.
+    RINGING = '3'
 
+    def __init__(self, fona_lock, call_lock, delay=5):
+        """Constructor for Call_Thread object.
+
+        Class which inherits from threading.Thread. Constructor to setup class
+        variables and open call_signal.txt file for communication between the
+        Call_Thread and the UI_Thread classes.
+       
         Args:
-            fona_lock (threading.Lock): lock used to make sure only one of the
-            thread classes defined in fona_processes directory writes to the
-            FONA serial port at a time
-            call_lock (threading.Lock): lock used to make sure only one of
-            either UI_Thread or Call_Thread writes to the call_signal.txt file
-            sms_lock (threading.Lock): lock used to make sure only one of either
-            UI_Thread or SMS_Thread writes to the sms_signal.txt file
-            delay (float): amount of time to delay between checking the
-            call_signal.txt and sms_signal.txt files (default is 5)
+            fona_lock (threading.Lock): lock in order to write commands to the
+            FONA port from this thread, the SMS thread, and the UI thread
+            call_lock (threading.Lock): lock in order to write to the
+            call_signal.txt file from Call_Thread and UI_Thread
+            delay (float): amount of time to pass between checks (default is 5
+            seconds)
         """
         Thread.__init__(self)
+        self.call_signal = open('call_signal.txt', 'w+')
         self.fona_lock = fona_lock
         self.call_lock = call_lock
-        self.sms_lock = sms_lock
         self.delay = delay
-        #################### TODO ####################
-        # self.display_boot_screen()
-        # self.load_homescreen()
-        ##############################################
-
-    def display_boot_screen(self):
-        """Display the boot loading screen while setting up hardware/software."""
-        pass
-
-    def load_homescreen(self):
-        """Load/display UI for homescreen as well as load the controller for that UI."""
-        pass
-
-    def _check_call_signal(self):
-        """Checks the call_signal.txt file to see if the Call_Thread background
-        thread has detected an incoming call.
-
-        The file call_signal.txt should only contain one line which is either
-        True or False. If the line is True, then the Call_Thread has edited this
-        file because there is an incoming call to the FONA device; otherwise,
-        there is no incoming call to the FONA device.
-
-        Returns:
-            True if the first line of the call_signal.txt file contains True
-            which indicates there is an incoming call; False otherwise to
-            indicate that there is no incoming call
-        """
-        return open('call_signal.txt', 'r').readline() == 'True'
-
-    def _update_call_file(self):
-        """Helper method to write to the call_signal.txt file False from this
-        thread to indicate the incoming call is going to be tended to.
-
-        This method first opens the call_signal.txt to write the string False to
-        it. It then will block until it acquires the call_lock which it shares
-        with the Call_Thread object. The line is written, the lock is released,
-        and the file is closed. After this method, the UI should be altered as a
-        result of this incoming call.
-        """
-        file = open('call_signal.txt', 'w+')
-        self.call_lock.acquire()
-        file.write('False')
-        self.call_lock.release()
-        file.close()
-
-    def check_call(self):
-        """Uses the _check_call_signal method to see if the Call_Thread has
-        detected any incoming phone call.
-
-        If the call_signal.txt file contains True, the file will be updated to
-        contain False, and UI elements should be updated to tell the user of the
-        incoming call. Otherwise, nothing will happen.
-        """
-        if self._check_call_signal():
-            self._update_call_file()
-            #################### TODO ####################
-            # handle changing GUI to handle an incoming call
-            ##############################################
-
-    def _check_sms_signal(self):
-        """Checks the sms_signal.txt file to see if the SMS_Thread background
-        thread has detected incoming SMSs.
-
-        The file sms_signal.txt should only contain one line which is either
-        True or False. If the line is True, then the SMS_Thread has edited this
-        file because there is are incoming SMSs to the FONA device; otherwise,
-        there are no SMSs received by the FONA device.
-
-        Returns:
-            True if the first line of the sms_signal.txt file contains True
-            which indicates there are incoming SMSs; False otherwise to
-            indicate that there are no incoming SMSs
-        """
-        return open('sms_signal.txt', 'r').readline() == 'True'
-
-    def _update_sms_file(self):
-        """Helper method to write to the sms_signal.txt file False from this
-        thread to indicate the UI has acknowledged the incoming SMSs.
-
-        This method first opens the sms_signal.txt to write the string False to
-        it. It then will block until it acquires the sms_lock which it shares
-        with the SMS_Thread object. The line is written, the lock is released,
-        and the file is closed. After this method, the UI should be altered as a
-        result of incoming SMSs.
-        """
-        file = open('sms_signal.txt', 'w+')
-        self.call_lock.acquire()
-        file.write('False')
-        self.call_lock.release()
-        file.close()
-
-    def check_sms(self):
-        """Uses the _check_sms_signal method to see if the SMS_Thread has
-        detected any incoming SMSs.
-
-        If the sms_signal.txt file contains True, the file will be updated to
-        contain False, and UI elements should be updated to tell the user of the
-        new SMSs. Otherwise, nothing will happen.
-        """
-        if self._check_sms_signal():
-            self._update_sms_file()
-            #################### TODO ####################
-            # handle changing GUI to handle an incoming call
-            ##############################################
 
     def run(self):
-        """Method which dictates what this thread does when it is created.
+        """Continually poll the FONA device to see if there are any incoming
+        calls.
 
-        Continually check the call_signal.txt and sms_signal.txt files which are
-        modified in the Call_Thread and SMS_Thread classes, respectively, as
-        well as this class.
+        Method which overrides the method run from threading.Thread. Called
+        whenever the method start is called on an instance of Call_Thread. 
 
-        The Call_Thread class will modify call_signal.txt by changing the file
-        contents to be True if a call is incoming, and the UI_Thread will see
-        this change and alter the file to contain False as well as update its
-        user interface to reflect an incoming call.
+        Using the fona_commands.phone_status method, run checks to see if
+        sending the FONA command for outputting phone status outputs the string
+        '3' which indicates there is an incoming call. This method runs as soon
+        as the Raspberry Pi is powered on, and it will run for as long as it is
+        on.
 
-        The SMS_Thread class will modify sms_signal.txt by changing the file
-        contents to be True if any number of SMSs have been received by the FONA
-        device. The UI_Thread class will notice this change and change the file
-        contents back to be False and update its user interface to reflect this
-        event.
+        Every 'delay' seconds, the output phone_status is checked for '3'. Once
+        this occurs, this method signals the UI thread that the FONA has an
+        incoming call by writing to the call_signal.txt file the string True.
 
-        This process of checking the files is repeated as long as the device is
-        powered on for every 'delay' seconds.
+        If the UI thread reads the call_signal.txt file for the phone
+        application, it will see that it contains True if there is an incoming
+        call. If this is the case, then the UI thread should perform any
+        necessary tasks for updating any type of display for signalling to the
+        user of an incoming phone call. Once this process is done, the UI thread
+        should then acquire the threading lock for the call_signal.txt file and
+        write the string False so that whenever it checks the call_signal.txt
+        file again, it will be accurate.
         """
-        ################## TODO ##################
-        # probably don't do this immediately when Pi is turned on; give it a second or two
-        # have a way to stop this whenever the Pi is about to be turned off
-        ##########################################
         while True:
-            self.check_call()
-            self.check_sms()
+            try:
+                self.fona_lock.acquire()
+                check_connection()
+                if phone_status() == Call_Thread.RINGING:
+                    print '\n***\n*** CALL INCOMING\n***'
+                    self.call_lock.acquire()
+                    self.call_signal.write('True')
+                    self.call_signal.seek(0)
+                    self.call_lock.release()
+            except:
+                print '\n***\n*** Error communicating with FONA\n***'
+                ################# TODO handle/signal UI thread #################
+            finally:
+                self.fona_lock.release()
             sleep(self.delay)
