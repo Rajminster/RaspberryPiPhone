@@ -46,16 +46,22 @@ class UI_Thread(Thread):
             delay (float): amount of time to delay between checking the
             call_signal.txt and sms_signal.txt files (default is 5)
         """
+        Thread.__init__(self)
         self.fona_lock = fona_lock
         self.call_lock = call_lock
         self.sms_lock = sms_lock
         self.delay = delay
         #################### TODO ####################
         # self.display_boot_screen()
+        # self.load_homescreen()
         ##############################################
 
     def display_boot_screen(self):
         """Display the boot loading screen while setting up hardware/software."""
+        pass
+
+    def load_homescreen(self):
+        """Load/display UI for homescreen as well as load the controller for that UI."""
         pass
 
     def _check_call_signal(self):
@@ -102,7 +108,6 @@ class UI_Thread(Thread):
             self._update_call_file()
             #################### TODO ####################
             # handle changing GUI to handle an incoming call
-            # is file.close() required or will it break things?
             ##############################################
 
     def _check_sms_signal(self):
@@ -149,16 +154,33 @@ class UI_Thread(Thread):
             self._update_sms_file()
             #################### TODO ####################
             # handle changing GUI to handle an incoming call
-            # is file.close() required or will it break things?
             ##############################################
 
     def run(self):
-        """Method this thread runs whenever the Raspberry Pi is powered on.
+        """Method which dictates what this thread does when it is created.
 
-        Continually check the call_signal.txt and sms_signal.txt files to see
-        if there is any incoming call or are any incoming SMSs; update the UI as
-        needed. Repeat this process every 'delay' seconds.
+        Continually check the call_signal.txt and sms_signal.txt files which are
+        modified in the Call_Thread and SMS_Thread classes, respectively, as
+        well as this class.
+
+        The Call_Thread class will modify call_signal.txt by changing the file
+        contents to be True if a call is incoming, and the UI_Thread will see
+        this change and alter the file to contain False as well as update its
+        user interface to reflect an incoming call.
+
+        The SMS_Thread class will modify sms_signal.txt by changing the file
+        contents to be True if any number of SMSs have been received by the FONA
+        device. The UI_Thread class will notice this change and change the file
+        contents back to be False and update its user interface to reflect this
+        event.
+
+        This process of checking the files is repeated as long as the device is
+        powered on for every 'delay' seconds.
         """
+        ################## TODO ##################
+        # probably don't do this immediately when Pi is turned on; give it a second or two
+        # have a way to stop this whenever the Pi is about to be turned off
+        ##########################################
         while True:
             self.check_call()
             self.check_sms()
