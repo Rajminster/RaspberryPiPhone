@@ -14,6 +14,10 @@ FONA device by sending specific commands to perform tasks such as receive SMS,
 send SMS, check FONA battery percentage, etc.
 """
 
+MIMNUM = 0
+FULL = 1
+DISABLE = 4
+
 def check_connection():
     """Checks if the FONA 2G device can be connected to successfully.
 
@@ -726,12 +730,40 @@ def pop_log_out():
     check_connection()
     _send_command('AT+POP3OUT')
 
+def set_phone_functionality(func):
+    """Sets phone functionality.
+
+    MINIMUM = 0: the smallest amount of functionality
+    FULL    = 1: full phone functionality
+    DISABLE = 4: disable phone transmission and receive
+    """
+    if func != MIMNUM or func != FULL or func != DISABLE:
+        raise ValueError('\n***\n*** Invalid value for functionality\n***')
+    check_connection()
+    _send_command('AT+CFUN=' + func)
+
+def pin_required():
+    """Check to see if the PIN is required to be entered."""
+    check_connection()
+    _send_command('AT+CPIN?')
+    return _get_output()[1].split(':')[1]
+
+def network_registration():
+    check_connection()
+    _send_command('AT+CREG?')
+    return _get_output()
+
+def get_time():
+    check_connection()
+    _send_command('AT+CCLK?')
+    return _get_output()[1]
+
+def set_time(time):
+    """Time is in format yy/MM/dd,hh:mm:ss+-zz."""
+    check_connection()
+    _send_command('AT+CCLK="' + time + '"')
+
 ##########################################################################$
-# AT+CFUN=? set phone functionality (IE airplane mode on/off)
-# AT+CMEE=1 error display related
-# AT+CCLK="yy/MM/dd,hh:mm:ss+-zz" set clock
-# AT+CIFSR get local IP address
-#
 # AT+CMMSINIT initialize MMS function
 # AT+CMMSCURL="link" sets MMS center based on URL
 ###########################################################################
