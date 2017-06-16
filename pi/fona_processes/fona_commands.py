@@ -610,6 +610,122 @@ def set_speaker_volume(volume):
     check_connection()
     _send_command('ATL' + volume)
 
+def echo_on():
+    check_connection()
+    _send_command('ATE1')
+
+def echo_off():
+    check_connection()
+    _send_command('ATE0')
+
+def factory_reset():
+    check_connection()
+    _send_command('AT&F0')
+
+def enable_caller_id():
+    check_connection()
+    _send_command('AT+CLIP=1')
+
+def disable_caller_id():
+    check_connection()
+    _send_command('AT+CLIP=0')
+
+def set_ringtone_volume(volume):
+    if volume < 0 or volume > 100:
+        raise ValueError('\n***\n*** Out of range value for volume\n***')
+    check_connection()
+    _send_command('AT+CRSL=' + volume)
+
+def power_off():
+    check_connection()
+    _send_command('AT+CPOWD=1')
+
+def get_local_timestamp():
+    check_connection()
+    _send_command('AT+CLTS?')
+
+def get_service_provider():
+    check_connection()
+    _send_command('AT+CSPN?')
+
+def open_microphone():
+    check_connection()
+    _send_command('AT+CEXTERN=0')
+
+def close_microphone():
+    check_connection()
+    _send_command('AT+CEXTERN=1')
+
+def initiate_tcp_connection(ip_address):
+    check_connection()
+    # 'AT+CIPSTART=2'
+
+def send_through_tcp(ip_address):
+    check_connection()
+    # 'AT+CIPSEND=2'
+
+def close_connection():
+    check_connection()
+    # 'AT+CIPCLOSE=0'
+
+def get_local_ip():
+    check_connection()
+    _send_command('AT+CIFSR')
+
+def gsm_location():
+    check_connection()
+    _send_command('AT+CIPGSMLOC=1')
+
+def set_sender_address(address, name):
+    check_connection()
+    _send_command('AT+SMTPFROM=' + address + ',' + name)
+
+def set_recipient_address(address, name):
+    check_connection()
+    _send_command('AT+SMTPRCPT=' + address + ',' + name)
+
+def set_email_subject(subject):
+    check_connection()
+    _send_command('AT+SMTPSUB=' + subject)
+
+def set_email_body(body):
+    check_connection()
+    _send_command('AT+SMTPBODY=' + str(len(body)))
+    _send_command(body)
+
+def email_txt_file(file_name, length):
+    # NOTE: length is the maximum length of a TXT file name
+    check_connection()
+    _send_command('AT+SMTPFILE=1,' + file_name + ',' + length + ',0')
+
+def send_email():
+    check_connection()
+    _send_command('AT+SMTPSEND')
+
+def set_pop3_server_account(server, user, password):
+    check_connection()
+    _send_command('AT+POP3SRV=' + server + ',' + user + ',' + password)
+
+def pop_log_in():
+    check_connection()
+    _send_command('AT+POP3IN')
+
+def get_email_num_size():
+    check_connection()
+    _send_command('AT+POP3NUM')
+
+def get_email_size(number):
+    check_connection()
+    _send_command('AT+POP3LIST=' + number)
+
+def set_delete_email(number):
+    check_connection()
+    _send_command('AT+POP3DEL=' + number)
+
+def pop_log_out():
+    check_connection()
+    _send_command('AT+POP3OUT')
+
 ##########################################################################$
 # AT+CFUN=? set phone functionality (IE airplane mode on/off)
 # AT+CMEE=1 error display related
