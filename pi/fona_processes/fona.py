@@ -64,8 +64,7 @@ def _send_command(data):
         data (str): string command. NOTE: \r is appended to commands
     """
     print '\n***\n*** Sending "' + data + '" to FONA device\n***'
-    data += '\r'
-    fona_port.write(data.encode('utf-8'))
+    fona_port.write((data + '\r').encode('utf-8'))
     sleep(0.2)
 
 def _send_end_signal():
