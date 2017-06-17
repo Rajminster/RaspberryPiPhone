@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from fona import _get_output, _send_command, _send_end_signal
-from time import sleep
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-28'
