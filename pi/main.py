@@ -18,6 +18,7 @@ from kivy.uix.label import Label
 
 class HomeScreenApp(App):
     def build(self):
+        uproot = BoxLayout()
         # the root is created in pictures.kv
         root = GridLayout(cols=3)
         root.spacing = [10,-300]
@@ -26,7 +27,7 @@ class HomeScreenApp(App):
 
         # get any files into images directory
         curdir = dirname(__file__)
-        for filename in glob(join(curdir, 'home_UI', '*')):
+        for filename in glob(join(curdir, 'home_UI_icons', '*')):
             try:
                 # load the image
                 image = Image(source=filename, allow_stretch=False)
@@ -35,7 +36,8 @@ class HomeScreenApp(App):
                 root.add_widget(image)
             except Exception as e:
                 Logger.exception('Pictures: Unable to load <%s>' % filename)
-        return root
+        uproot.add_widget(root)
+        return uproot
 
 
 if __name__ == '__main__':
