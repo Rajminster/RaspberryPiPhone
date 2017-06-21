@@ -6,12 +6,12 @@ from kivy.uix.boxlayout import BoxLayout
 
 from kivy.app import App
 
-class ContactsApp(App):
+class MessageApp(App):
     def build(self):
         Window.size = (480, 800)
         Window.fullscreen = False
         return BoxLayout()
 
 if __name__ == '__main__':
-    home = ContactsApp()
+    home = MessageApp()
     home.run()

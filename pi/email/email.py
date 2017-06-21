@@ -3,6 +3,8 @@
 ###############################
 
 import poplib
+from kivy.app import App
+from kivy.core.window import Window
 
 my_pop = poplib.POP3_SSL(host='pop.gmail.com')
 my_pop.getwelcome()
@@ -22,3 +24,8 @@ for line in email_top[1]:
 
 
 my_pop.quit() # log off
+
+class EmailApp(App):
+	def build(self):
+		Window.size = (480, 800)
+		Window.fullscreen = False

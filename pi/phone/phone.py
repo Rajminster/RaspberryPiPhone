@@ -22,16 +22,30 @@ class UI():
     def run(self):
         # create GUI here
 
-        while ui.is_open:
-            """ check if call_received or sms_received are True, then handle that
-            (set it to False and draw notification to the GUI) """
-            pass
+
         self.close_application()
 
     def close_application(self):
         """ close any files opened """
-        signal.close()
+        #signal.close()
 
 if __name__ == '__main__':
     ui = UI()
     ui.run()
+
+from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
+
+# kivy.require('1.0.6')  # replace with your current kivy version !
+
+from kivy.app import App
+
+class PhoneApp(App):
+    def build(self):
+        Window.size = (480, 800)
+        Window.fullscreen = False
+        return BoxLayout()
+
+if __name__ == '__main__':
+    home = PhoneApp()
+    home.run()
