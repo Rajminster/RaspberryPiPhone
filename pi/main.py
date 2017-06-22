@@ -30,7 +30,7 @@ class HomeScreenApp(App):
         # get any files into images directory
         #75 from left, 160 between
         x = 30
-        y = 410
+        y = 395
         col = 1
 
         button = Button(size_hint=(.11, .07), pos=(214, 7))
@@ -45,7 +45,7 @@ class HomeScreenApp(App):
                 # load the image
                 button = Button(size_hint=(.205, .122), pos=(x, y))
                 image = Image(source=filename, allow_stretch=False)
-                #image.size = [0.5,0.5]
+                image.size = (120,120)
                 button.add_widget(image)
                 image.center = (button.center_x,button.center_y)
                 # add to the main field
