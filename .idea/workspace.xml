@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Camera App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Camera App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Contacts App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Contacts App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Gallery App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Gallery App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Internet App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Internet App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Mail App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Mail App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Music App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Music App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Phone App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Phone App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Settings App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Settings App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI/Texting App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/Texting App.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pi/Home_Button.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/HomeScreen.kv" afterPath="$PROJECT_DIR$/pi/HomeScreen.kv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/main.py" afterPath="$PROJECT_DIR$/pi/main.py" />
@@ -37,8 +29,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pi/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="660">
-              <caret line="37" column="76" selection-start-line="37" selection-start-column="76" selection-end-line="37" selection-end-column="76" />
+            <state relative-caret-position="506">
+              <caret line="30" column="34" selection-start-line="30" selection-start-column="34" selection-end-line="30" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -47,8 +39,28 @@
       <file leaf-file-name="HomeScreen.kv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pi/HomeScreen.kv">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="5" column="42" selection-start-line="5" selection-start-column="42" selection-end-line="5" selection-end-column="42" />
+            <state relative-caret-position="0">
+              <caret line="0" column="6" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ui_thread.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pi/fona_processes/ui_thread.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-314">
+              <caret line="26" column="76" selection-start-line="26" selection-start-column="76" selection-end-line="26" selection-end-column="76" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="boot.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pi/fona_processes/boot.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -189,6 +201,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="gallery" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RaspberryPiPhone" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RaspberryPiPhone" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fona_processes" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -534,11 +564,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/Python35/Lib/site-packages/kivy/lang/parser.py" />
-    <entry file="file://C:/Python35/share/kivy-examples/gestures/my_gestures.py" />
-    <entry file="file://C:/Python35/share/kivy-examples/gestures/gesture_board.py" />
-    <entry file="file://C:/Python35/share/kivy-examples/tutorials/notes/final/main.py" />
-    <entry file="file://$PROJECT_DIR$/pi/home_screen.py" />
     <entry file="file://C:/Python35/share/kivy-examples/demo/showcase/main.py" />
     <entry file="file://C:/Python35/share/kivy-examples/demo/touchtracer/main.py" />
     <entry file="file://$PROJECT_DIR$/main.py" />
@@ -616,16 +641,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pi/gallery/contacts.kv" />
-    <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15417">
-          <caret line="571" column="0" selection-start-line="571" selection-start-column="0" selection-end-line="571" selection-end-column="0" />
-          <folding>
-            <element signature="e#23#84#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PiOS Design.png">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -688,7 +703,7 @@
         <state relative-caret-position="198">
           <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
           <folding>
-            <element signature="e#1#36#0" expanded="true" />
+            <element signature="e#1#36#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -716,7 +731,7 @@
         <state relative-caret-position="264">
           <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
           <folding>
-            <element signature="e#1#36#0" expanded="true" />
+            <element signature="e#1#36#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -726,7 +741,7 @@
         <state relative-caret-position="374">
           <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding>
-            <element signature="e#1#36#0" expanded="true" />
+            <element signature="e#1#36#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -757,7 +772,7 @@
         <state relative-caret-position="198">
           <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
           <folding>
-            <element signature="e#1#36#0" expanded="true" />
+            <element signature="e#1#36#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -767,7 +782,7 @@
         <state relative-caret-position="374">
           <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding>
-            <element signature="e#1#36#0" expanded="true" />
+            <element signature="e#1#36#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -780,18 +795,66 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1062">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/fona_commands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-248">
+          <caret line="571" column="0" selection-start-line="571" selection-start-column="0" selection-end-line="571" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/call_thread.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/sms_record.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/boot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pi/fona_processes/ui_thread.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-314">
+          <caret line="26" column="76" selection-start-line="26" selection-start-column="76" selection-end-line="26" selection-end-column="76" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pi/HomeScreen.kv">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="5" column="42" selection-start-line="5" selection-start-column="42" selection-end-line="5" selection-end-column="42" />
+        <state relative-caret-position="0">
+          <caret line="0" column="6" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pi/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="37" column="76" selection-start-line="37" selection-start-column="76" selection-end-line="37" selection-end-column="76" />
+        <state relative-caret-position="506">
+          <caret line="30" column="34" selection-start-line="30" selection-start-column="34" selection-end-line="30" selection-end-column="34" />
           <folding />
         </state>
       </provider>
