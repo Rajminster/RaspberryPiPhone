@@ -43,7 +43,7 @@ class HomeScreenApp(App):
         for filename in glob(join(curdir, 'home_UI_icons', '*')):
             try:
                 # load the image
-                button = Button(size_hint=(.205, .122), pos=(x, y))
+                button = Button(size_hint=(.23, .132), pos=(x, y))
                 image = Image(source=filename, allow_stretch=False)
                 image.size = (120,120)
                 button.add_widget(image)
