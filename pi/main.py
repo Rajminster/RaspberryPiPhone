@@ -33,8 +33,8 @@ class HomeScreenApp(App):
         y = 410
         col = 1
 
-        button = Button(size_hint=(.1, .07), pos=(218, 10))
-        button.opacity = 0.5
+        button = Button(size_hint=(.11, .07), pos=(214, 7))
+        button.opacity = 0.3
         image = Image(source='Home_Button.png', allow_stretch=False, pos=(0,-365))
         root.add_widget(button)
         root.add_widget(image)
