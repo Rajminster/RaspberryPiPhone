@@ -1,17 +1,8 @@
+from kivy.core.audio import SoundLoader
 
-from kivy.core.window import Window
-from kivy.uix.boxlayout import BoxLayout
+# need to define clicked in UI
 
-# kivy.require('1.0.6')  # replace with your current kivy version !
+sound = SoundLoader.load(clicked)
 
-from kivy.app import App
-
-class MusicApp(App):
-    def build(self):
-        Window.size = (480, 800)
-        Window.fullscreen = False
-        return BoxLayout()
-
-if __name__ == '__main__':
-    home = MusicApp()
-    home.run()
+if sound:
+    sound.play()
