@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # ui_thread.py
+from kivy.uix.floatlayout import FloatLayout
+
 
 class UI():
     """Class to run the UI for phone application.
@@ -44,7 +46,7 @@ class PhoneApp(App):
     def build(self):
         Window.size = (480, 800)
         Window.fullscreen = False
-        return BoxLayout()
+        return FloatLayout()
 
 if __name__ == '__main__':
     home = PhoneApp()

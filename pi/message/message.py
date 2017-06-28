@@ -5,12 +5,14 @@ from kivy.uix.boxlayout import BoxLayout
 # kivy.require('1.0.6')  # replace with your current kivy version !
 
 from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+
 
 class MessageApp(App):
     def build(self):
         Window.size = (480, 800)
         Window.fullscreen = False
-        return BoxLayout()
+        return FloatLayout()
 
 if __name__ == '__main__':
     home = MessageApp()
