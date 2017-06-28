@@ -2,29 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3a94d3c-95f0-4502-a467-109db271debd" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/pi/email/ui.py" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/email/contacts.kv" afterPath="$PROJECT_DIR$/pi/email/email.kv" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/1 Phone App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/7 Phone App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/2 Texting App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/9 Texting App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/3 Broswer App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/8 Broswer App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/4 Settings App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/5 Settings App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/5 Camera App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/4 Camera App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/7 Music App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/1 Music App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/8 Contacts App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/2 Contacts App.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pi/home_UI_icons/9 Mail App.png" afterPath="$PROJECT_DIR$/pi/home_UI_icons/3 Mail App.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/browser/broswer.kv" afterPath="$PROJECT_DIR$/pi/browser/broswer.kv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/browser/browser.py" afterPath="$PROJECT_DIR$/pi/browser/browser.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/contacts/contacts.kv" afterPath="$PROJECT_DIR$/pi/contacts/contacts.kv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/contacts/contacts.py" afterPath="$PROJECT_DIR$/pi/contacts/contacts.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/message/message.kv" afterPath="$PROJECT_DIR$/pi/message/message.kv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/message/message.py" afterPath="$PROJECT_DIR$/pi/message/message.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/music/music.kv" afterPath="$PROJECT_DIR$/pi/music/music.kv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/music/music.py" afterPath="$PROJECT_DIR$/pi/music/music.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/phone/phone.kv" afterPath="$PROJECT_DIR$/pi/phone/phone.kv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/phone/phone.py" afterPath="$PROJECT_DIR$/pi/phone/phone.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/settings/settings.kv" afterPath="$PROJECT_DIR$/pi/settings/settings.kv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pi/settings/settings.py" afterPath="$PROJECT_DIR$/pi/settings/settings.py" />
     </list>
     <ignored path="RaspberryPiPhone.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -68,8 +46,8 @@
       <file leaf-file-name="music.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pi/music/music.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="16" column="20" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+            <state relative-caret-position="616">
+              <caret line="28" column="14" selection-start-line="28" selection-start-column="14" selection-end-line="28" selection-end-column="14" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -114,7 +92,6 @@
         <option value="$PROJECT_DIR$/pi/phone/ui.py" />
         <option value="$PROJECT_DIR$/pi/HomeScreen.kv" />
         <option value="$PROJECT_DIR$/pi/main.py" />
-        <option value="$PROJECT_DIR$/pi/music/music.py" />
         <option value="$PROJECT_DIR$/pi/music/music.kv" />
         <option value="$PROJECT_DIR$/pi/message/message.kv" />
         <option value="$PROJECT_DIR$/pi/contacts/contacts.kv" />
@@ -127,6 +104,7 @@
         <option value="$PROJECT_DIR$/pi/phone/phone.py" />
         <option value="$PROJECT_DIR$/pi/settings/settings.kv" />
         <option value="$PROJECT_DIR$/pi/settings/settings.py" />
+        <option value="$PROJECT_DIR$/pi/music/music.py" />
       </list>
     </option>
   </component>
@@ -226,7 +204,7 @@
       <recent name="C:\Users\rajmi\Documents\GitHub\RaspberryPiPhone\pi" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.phone">
+  <component name="RunManager" selected="Python.music">
     <configuration default="false" name="browser" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -455,10 +433,10 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.phone" />
-        <item index="1" class="java.lang.String" itemvalue="Python.message" />
-        <item index="2" class="java.lang.String" itemvalue="Python.browser" />
-        <item index="3" class="java.lang.String" itemvalue="Python.music" />
+        <item index="0" class="java.lang.String" itemvalue="Python.music" />
+        <item index="1" class="java.lang.String" itemvalue="Python.phone" />
+        <item index="2" class="java.lang.String" itemvalue="Python.message" />
+        <item index="3" class="java.lang.String" itemvalue="Python.browser" />
         <item index="4" class="java.lang.String" itemvalue="Python.main" />
       </list>
     </recent_temporary>
@@ -784,8 +762,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pi/music/music.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="16" column="20" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+        <state relative-caret-position="616">
+          <caret line="28" column="14" selection-start-line="28" selection-start-column="14" selection-end-line="28" selection-end-column="14" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
