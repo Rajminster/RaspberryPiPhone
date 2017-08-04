@@ -7,6 +7,7 @@ from picamera import PiCamera
 from time import sleep
 from datetime import datetime, timedelta
 import pygame
+from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 
@@ -161,6 +162,8 @@ sm.add_widget(RecordScreen(name='record'))
 
 class CameraApp(App):
     def build(self):
+        Window.size = (400, 600)
+        Window.fullscreen = False
         return sm
 
 if __name__ == '__main__':
