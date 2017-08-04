@@ -1,16 +1,26 @@
 <CameraScreen>:
-    on_enter: cmra
+    on_enter: camera.Camera()
     AnchorLayout:
 
         Button:
             border: Line(circle=150, 150, 50)
             close: True
-            on_press: cmra.image()
+            on_press: camera.Camera().image()
         Button:
             text: 'Low Light'
-            on_press: cmra.lowLightImage()
+            on_press: camera.Camera().lowLightImage()
+        Button:
+            text: 'Record'
+            on_press:
+                root.manager.transition.direction: 'right'
+                root.manager.current: 'record'
 <RecordScreen>
     BoxLayout:
         Button:
             border: Line(circle=150, 150, 50)
-            on_press: cmra.record()
+            on_press: camera.Camera().record()
+        Button:
+            text: 'Camera'
+            on_press:
+                root.manager.transition.direction: 'left'
+                root.manager.current: 'camera'

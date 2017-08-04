@@ -7,6 +7,8 @@ from picamera import PiCamera
 from time import sleep
 from datetime import datetime, timedelta
 import pygame
+from kivy.uix.screenmanager import ScreenManager, Screen
+
 
 class Camera():
     """Wrapper class to interact with the Raspberry Pi's camera hardware
@@ -146,3 +148,20 @@ class Camera():
     def close(self):
         """Method called whenever the camera UI is closed. Closes the Raspberry Pi's camera."""
         self.camera.close()
+
+class RecordScreen(screen):
+    pass
+
+class CameraScreen(screen):
+    pass
+
+sm = ScreenManager()
+sm.add_widget(CameraScreen(name='camera'))
+sm.add_widget(RecordScreen(name='record'))
+
+class CameraApp(App):
+    def build(self):
+        return sm
+
+if __name__ == '__main__':
+    CameraApp().run()
