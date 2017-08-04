@@ -162,8 +162,7 @@ sm.add_widget(RecordScreen(name='record'))
 
 class CameraApp(App):
     def build(self):
-        Window.size = (400, 600)
-        Window.fullscreen = False
+        Window.fullscreen = True
         return sm
 
 if __name__ == '__main__':
