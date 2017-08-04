@@ -16,6 +16,20 @@ from os.path import dirname, abspath
 
 from kivy.uix.floatlayout import FloatLayout
 
+class Sound(clicked):
+    sound = SoundLoader.load(clicked)
+    def play(self):
+        if sound:
+            sound.play()
+    def pause(self):
+        sound.stop():
+    def playAtTime(self, time):
+        sound.seek(time)
+
+    def next(self):
+        sound.unload()
+
+
 
 class MusicApp(App):
     def build(self):
@@ -29,4 +43,3 @@ if __name__ == '__main__':
     home.run()
 if sound:
     sound.play()
-
