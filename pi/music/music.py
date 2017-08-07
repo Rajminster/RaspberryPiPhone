@@ -8,6 +8,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.core.audio import SoundLoader
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.progressbar import ProgressBar
 from kivy.uix.slider import Slider
 
 from kivy.app import App
@@ -76,10 +77,14 @@ class ListScreen(screen):
         for i in 1000:
             btn = Button(text=str('A button #', i))
             box1.add_widget(btn)
+
+
         root = ScrollView(size_hint=(1, None), size=(Window.width,
             Window.height))
         root.add_widget(layout)
         runTouchApp(root)
+
+
     def changer(self, *args):
         self.manager.current = 'other'
 
@@ -89,10 +94,15 @@ class OtherScreen(Screen):
         super(OtherScreen,self).__init__(**kwargs)
         float = FloatLayout()
         label = Label(text='0.00')
-        s = Slider(min = 0, max = sound.length, value = 0)
+        s = Slider(min = 0, max = Sound().sound.length, value = 0,
+            value_track=True, value_track_color=[1, 0, 0, 1])
+        s.step = .01
         btn2 = Button(text='go to list')
+        pb = ProgressBar(max=Sound().sound.length)
+        pb.bind(value=self.sliderProgress(Sound().sound.get_pos()))
         btn2.bind(on_press=self.changer)
         s.bind(value=self.sliderProgress)
+        s.bind(on_touch_up=playAtTime(value))
         float.add_widget(btn2)
         float.add_widget(s)
 
