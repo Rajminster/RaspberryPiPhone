@@ -76,6 +76,10 @@ class ListScreen(screen):
         for i in 1000:
             btn = Button(text=str('A button #', i))
             box1.add_widget(btn)
+        root = ScrollView(size_hint=(1, None), size=(Window.width,
+            Window.height))
+        root.add_widget(layout)
+        runTouchApp(root)
     def changer(self, *args):
         self.manager.current = 'other'
 
@@ -109,10 +113,6 @@ class MusicApp(App):
         Window.size = (480, 800)
         Window.fullscreen = False
         par = dirname(dirname(abspath(__file__)))
-        root = ScrollView(size_hint=(1, None), size=(Window.width,
-            Window.height))
-        root.add_widget(layout)
-        runTouchApp(root)
         return sm
 
 if __name__ == '__main__':
