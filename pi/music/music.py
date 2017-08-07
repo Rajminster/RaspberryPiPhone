@@ -8,16 +8,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.core.audio import SoundLoader
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.scrollview import ScrollView
-
-# need to define clicked in UI
-#sound = SoundLoader.load(clicked)
-
+from kivy.uix.slider import Slider
 
 from kivy.app import App
 from kivy.app import runTouchApp
-from kivy.uix.carousel import Carousel
-from kivy.uix.image import AsyncImage
 from os.path import dirname, abspath
+from kivy.uix.label import Label
 
 from kivy.uix.floatlayout import FloatLayout
 
@@ -66,7 +62,9 @@ class Sound():
             sound = SoundLoader.load(d.get(count - 1))
         else:
             sound = SoundLoader.load(d.get((Songsplayed-1)%(count-1)))
-        play()
+        if playing:
+            play()
+
 
 
 class ListScreen(screen):
@@ -86,12 +84,18 @@ class OtherScreen(Screen):
     def __init__(self, **kwargs):
         super(OtherScreen,self).__init__(**kwargs)
         float = FloatLayout()
+        label = Label(text='0.00')
+        s = Slider(min = 0, max = sound.length, value = 0)
         btn2 = Button(text='go to list')
         btn2.bind(on_press=self.changer)
+        s.bind(value=self.sliderProgress)
+        float.add_widget(btn2)
 
     def changer(self, *args):
         self.manager.current = 'list'
 
+    def sliderProgress(self, value):
+        label.text = str(value)
 
 
 sm = ScreenManager()
