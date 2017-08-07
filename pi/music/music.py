@@ -90,6 +90,7 @@ class OtherScreen(Screen):
         btn2.bind(on_press=self.changer)
         s.bind(value=self.sliderProgress)
         float.add_widget(btn2)
+        float.add_widget(s)
 
     def changer(self, *args):
         self.manager.current = 'list'
