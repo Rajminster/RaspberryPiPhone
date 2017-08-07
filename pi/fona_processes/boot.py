@@ -2,8 +2,8 @@
 
 from call_thread import Call_Thread
 from sms_thread import SMS_Thread
-from ui_thread import UI_Thread
 from threading import Lock
+from ui_thread import UI_Thread
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-30'
@@ -27,7 +27,6 @@ When this script runs, three threads are created: one for polling the FONA for
 incoming calls, one for polling the FONA for incoming SMSs, and one for setting
 up and displaying the UI.
 """
-
 if __name__ == '__main__':
     fona_lock = Lock()
     call_lock = Lock()
