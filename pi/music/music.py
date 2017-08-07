@@ -7,12 +7,14 @@ from kivy.uix.boxlayout import BoxLayout
 
 from kivy.core.audio import SoundLoader
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.scrollview import ScrollView
 
 # need to define clicked in UI
 #sound = SoundLoader.load(clicked)
 
 
 from kivy.app import App
+from kivy.app import runTouchApp
 from kivy.uix.carousel import Carousel
 from kivy.uix.image import AsyncImage
 from os.path import dirname, abspath
@@ -22,6 +24,7 @@ from kivy.uix.floatlayout import FloatLayout
 
 
 class Sound():
+    playing = False
     count = 0
     Songsplayed = 0
     d = dict()
@@ -36,9 +39,13 @@ class Sound():
     def play(self):
         if sound:
             sound.play()
+        playing = True
     def pause(self):
         sound.stop()
+        playing = False
     def playAtTime(self, time):
+        if playing == False:
+            play()
         sound.seek(time)
 
     def next(self):
@@ -49,7 +56,8 @@ class Sound():
             Songsplayed = 0
         else:
             sound = SoundLoader.load(d.get(Songsplayed))
-        play()
+        if playing:
+            play()
 
 
     def back(self):
@@ -96,6 +104,10 @@ class MusicApp(App):
         Window.size = (480, 800)
         Window.fullscreen = False
         par = dirname(dirname(abspath(__file__)))
+        root = ScrollView(size_hint=(1, None), size=(Window.width,
+            Window.height))
+        root.add_widget(layout)
+        runTouchApp(root)
         return sm
 
 if __name__ == '__main__':
