@@ -75,7 +75,7 @@ class ListScreen(screen):
 
 
 class OtherScreen(Screen):
-    def __init__(slef, **kwargs):
+    def __init__(self, **kwargs):
         super(OtherScreen,self).__init__(**kwargs)
         float = FloatLayout()
         btn2 = Button(text='go to list')
