@@ -97,10 +97,18 @@ class OtherScreen(Screen):
         s = Slider(min = 0, max = Sound().sound.length, value = 0,
             value_track=True, value_track_color=[1, 0, 0, 1])
         s.step = .01
+        btnp = Button(text='play')
+        btnpau = Button(text='pause')
+        btnb = Button(text='back')
         btn2 = Button(text='go to list')
+        btnn = Button(text='next')
         pb = ProgressBar(max=Sound().sound.length)
         pb.bind(value=self.sliderProgress(Sound().sound.get_pos()))
         btn2.bind(on_press=self.changer)
+        btnp.bind(on_press=Sound().play())
+        btnpau.bind(on_press=Sound().pause())
+        btnb.bind(on_press=Sound().back())
+        btnn.bind(on_press=Sound().next())
         s.bind(value=self.sliderProgress)
         s.bind(on_touch_up=playAtTime(value))
         float.add_widget(btn2)
