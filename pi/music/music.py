@@ -1,75 +1,83 @@
-import os
+from os.path import abspath, dirname
+
 from Canvas import Rectangle
 
+from kivy.app import App, runTouchApp
 from kivy.core.window import Window
+from kivy.core.audio import SoundLoader
 from kivy.graphics.instructions import Canvas
 from kivy.uix.boxlayout import BoxLayout
-
-from kivy.core.audio import SoundLoader
 from kivy.uix.button import Button
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.scrollview import ScrollView
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
+from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.slider import Slider
 
-from kivy.app import App
-from kivy.app import runTouchApp
-from os.path import dirname, abspath
-from kivy.uix.label import Label
+import os
 
-from kivy.uix.floatlayout import FloatLayout
+################################################################################
+#           TODO: if a song is selected, correctly update song_number          #
+################################################################################
+class Music_Player():
+    """Class to play songs from the /Songs directory
 
-global sound
+    Attribute:
+        PATH (str): path to wherever the songs are saved
+    """
 
-class Sound():
-    playing = False
-    count = 0
-    global Songsplayed
-    Songsplayed = 0
-    d = []
-    path = 'Songs'
-    for filename in os.listdir(path):
-        d[count] = filename
-        count = count + 1
+    PATH = 'Songs'
 
-    sound = SoundLoader.load(d[0])
+    def __init__(self):
+        """Constructor which sets class-wide variables and loads the library"""
+        self.playing = False
+        self.song_number = 0 # index of which song played most recently
 
-    first = sound
+        self.library = []
+        i = 0
+        for file_name in os.listdir(PATH):
+            self.library[i] = file_name
+            i += 1
+        self.current_playing = SoundLoader.load(self.library[0])
 
     def play(self):
-        if sound:
-            sound.play()
-        playing = True
+        """Play the song which is labeled as current_playing"""
+        if self.current_playing:
+            self.current_playing.play()
+            self.playing = True
+        else:
+            ####################################################################
+            #          TODO: write a try except block to handle this           #
+            ####################################################################
+            raise TypeError('Song selected is None')
+
     def pause(self):
-        sound.stop()
-        playing = False
+        """Pause any playing song"""
+        self.current_playing.stop()
+        self.playing = False
+
     def playAtTime(self, time):
-        if playing == False:
-            play()
-        sound.seek(time)
+        """Start playing a song at a given time"""
+        if not self.current_playing:
+            self.play()
+        self.current_playing.seek(time)
 
     def next(self):
-        sound.unload()
-        Songsplayed = Songsplayed + 1
-        if Songsplayed > count - 1:
-            sound = first
-            Songsplayed = 0
-        else:
-            sound = SoundLoader.load(d[Songsplayed])
-        if playing:
-            play()
-
+        """Play the next song listed in the library"""
+        self.current_playing.unload()
+        self.song_number += 1
+        self.current_playing = SoundLoader.load(self.library[self.song_number % len(library)])
+        if self.playing:
+            self.play()
 
     def back(self):
-        sound.unload()
-        if (Songsplayed-1)%(count-1) == 0:
-            sound = SoundLoader.load(d[count - 1])
-        else:
-            sound = SoundLoader.load(d[(Songsplayed-1)%(count-1)])
-        if playing:
-            play()
-
-
+        """Play the previously listed song"""
+        self.current_playing.unload()
+        self.song_number -= 1
+        self.current_playing = SoundLoader.load(self.library[self.song_number % len(library)])
+        if self.playing:
+            self.play()
 
 class ListScreen(Screen):
     def __init__(self, **kwargs):
@@ -80,41 +88,34 @@ class ListScreen(Screen):
         for i in range(1000):
             btn = Button(text=str('A button #'))
             box1.add_widget(btn)
-
-
-        root = ScrollView(size_hint=(1, None), size=(Window.width,
-            Window.height))
+        root = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
         root.add_widget(box1)
-
-
 
     def changer(self, *args):
         self.manager.current = 'other'
-
 
 class OtherScreen(Screen):
     def __init__(self, **kwargs):
         super(OtherScreen,self).__init__(**kwargs)
         float = FloatLayout()
-        global label
-        label = Label(text='0.00')
-        s = Slider(min = 0, max = Sound().sound.length, value = 0,
-            value_track=True, value_track_color=[1, 0, 0, 1])
+        player = Music_Player()
+        self.label = Label(text='0.00')
+        s = Slider(min = 0, max=player.current_playing.length, value=0, value_track=True, value_track_color=[1, 0, 0, 1])
         s.step = .01
         btnp = Button(text='play')
         btnpau = Button(text='pause')
         btnb = Button(text='back')
         btn2 = Button(text='go to list')
         btnn = Button(text='next')
-        pb = ProgressBar(max=Sound().sound.length)
-        pb.bind(value=self.sliderProgress(Sound().sound.get_pos()))
+        pb = ProgressBar(max=player.current_playing.length)
+        pb.bind(value=self.sliderProgress(player.current_playing.get_pos()))
         btn2.bind(on_press=self.changer)
-        btnp.bind(on_press=Sound().play())
-        btnpau.bind(on_press=Sound().pause())
-        btnb.bind(on_press=Sound().back())
-        btnn.bind(on_press=Sound().next())
+        btnp.bind(on_press=player.play())
+        btnpau.bind(on_press=player.pause())
+        btnb.bind(on_press=player.back())
+        btnn.bind(on_press=player.next())
         s.bind(value=self.sliderProgress)
-        s.bind(on_touch_up=playAtTime(value))
+        s.bind(on_touch_up=player.playAtTime(value))
         float.add_widget(btn2)
         float.add_widget(s)
 
@@ -122,16 +123,17 @@ class OtherScreen(Screen):
         self.manager.current = 'list'
 
     def sliderProgress(self, value):
-        label.text = str(value)
-
+        self.label.text = str(value)
 
 sm = ScreenManager()
 sm.add_widget(ListScreen(name='list'))
 sm.add_widget(OtherScreen(name='other'))
 
 class MusicApp(App):
-    def build(self):
+    def __init__(self):
+        pass
 
+    def build(self):
         Window.size = (480, 800)
         Window.fullscreen = False
         par = dirname(dirname(abspath(__file__)))
