@@ -267,8 +267,7 @@ if __name__ == '__main__':
                 ],
                 pos=(20, 10),
                 size_hint=(None, None),
-                # size=(Window.width-40, Window.height-20),
-                size=(480, 800),
+                size=(Window.width-40, Window.height-20),
             )
             return self.tb
 

@@ -17,11 +17,7 @@ class BrowserApp(App):
         Window.fullscreen = False
         return TabbedCEFBrowser(
                 urls=[
-                    "http://kivy.org",
-                    "https://github.com/kivy-garden/garden.cefpython",
-                    "http://code.google.com/p/cefpython/",
-                    "http://code.google.com/p/chromiumembedded/",
-                    "about:blank",
+                    "http://keh.com"
                 ],
                 pos=(0, 0),
                 size_hint=(None, None),
