@@ -8,6 +8,7 @@ from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 
 
+
 class BrowserApp(App):
     def build(self):
         Window.size = (480, 800)

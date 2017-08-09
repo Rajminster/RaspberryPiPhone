@@ -19,7 +19,7 @@ from kivy.uix.label import Label
 
 from kivy.uix.floatlayout import FloatLayout
 
-
+global sound
 
 class Sound():
     playing = False
@@ -27,11 +27,11 @@ class Sound():
     global Songsplayed
     Songsplayed = 0
     d = dict()
-    path = 'Users/Dharshan/Documents/RaspberryPiPhone/songs'
+    path = 'Songs'
     for filename in os.listdir(path):
         d[count] = filename
         count = count + 1
-    global sound
+
     sound = SoundLoader.load(d.get(0))
 
     first = sound
@@ -71,21 +71,21 @@ class Sound():
 
 
 
-class ListScreen(screen):
+class ListScreen(Screen):
     def __init__(self, **kwargs):
         super(ListScreen,self).__init__(**kwargs)
         box1 = BoxLayout(orientation='vertical')
         btn1 = Button(text='go to other')
         btn1.bind(on_press=self.changer)
-        for i in 1000:
-            btn = Button(text=str('A button #', i))
+        for i in range(1000):
+            btn = Button(text=str('A button #'))
             box1.add_widget(btn)
 
 
         root = ScrollView(size_hint=(1, None), size=(Window.width,
             Window.height))
-        root.add_widget(layout)
-        runTouchApp(root)
+        root.add_widget(box1)
+
 
 
     def changer(self, *args):
@@ -96,6 +96,7 @@ class OtherScreen(Screen):
     def __init__(self, **kwargs):
         super(OtherScreen,self).__init__(**kwargs)
         float = FloatLayout()
+        global label
         label = Label(text='0.00')
         s = Slider(min = 0, max = Sound().sound.length, value = 0,
             value_track=True, value_track_color=[1, 0, 0, 1])
