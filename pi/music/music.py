@@ -26,13 +26,13 @@ class Sound():
     count = 0
     global Songsplayed
     Songsplayed = 0
-    d = dict()
+    d = []
     path = 'Songs'
     for filename in os.listdir(path):
         d[count] = filename
         count = count + 1
 
-    sound = SoundLoader.load(d.get(0))
+    sound = SoundLoader.load(d[0])
 
     first = sound
 
@@ -55,7 +55,7 @@ class Sound():
             sound = first
             Songsplayed = 0
         else:
-            sound = SoundLoader.load(d.get(Songsplayed))
+            sound = SoundLoader.load(d[Songsplayed])
         if playing:
             play()
 
@@ -63,9 +63,9 @@ class Sound():
     def back(self):
         sound.unload()
         if (Songsplayed-1)%(count-1) == 0:
-            sound = SoundLoader.load(d.get(count - 1))
+            sound = SoundLoader.load(d[count - 1])
         else:
-            sound = SoundLoader.load(d.get((Songsplayed-1)%(count-1)))
+            sound = SoundLoader.load(d[(Songsplayed-1)%(count-1)])
         if playing:
             play()
 
