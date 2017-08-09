@@ -5,6 +5,7 @@
 import poplib
 from kivy.app import App
 from kivy.core.window import Window
+from kivy.uix.floatlayout import FloatLayout
 
 my_pop = poplib.POP3_SSL(host='pop.gmail.com')
 my_pop.getwelcome()
@@ -29,3 +30,7 @@ class EmailApp(App):
 	def build(self):
 		Window.size = (480, 800)
 		Window.fullscreen = False
+		return FloatLayout()
+if __name__ == '__main__':
+    home = EmailApp()
+    home.run()
