@@ -6,6 +6,7 @@ from kivy.graphics.instructions import Canvas
 from kivy.uix.boxlayout import BoxLayout
 
 from kivy.core.audio import SoundLoader
+from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.progressbar import ProgressBar
@@ -23,12 +24,14 @@ from kivy.uix.floatlayout import FloatLayout
 class Sound():
     playing = False
     count = 0
+    global Songsplayed
     Songsplayed = 0
     d = dict()
     path = 'Users/Dharshan/Documents/RaspberryPiPhone/songs'
     for filename in os.listdir(path):
         d[count] = filename
         count = count + 1
+    global sound
     sound = SoundLoader.load(d.get(0))
 
     first = sound

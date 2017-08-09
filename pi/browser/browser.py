@@ -12,6 +12,7 @@ class BrowserApp(App):
     def build(self):
         Window.size = (480, 800)
         Window.fullscreen = False
+        #Need to add chromium extension or some HTML rendere
         return FloatLayout()
 
 if __name__ == '__main__':
