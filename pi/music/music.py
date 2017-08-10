@@ -27,17 +27,15 @@ class Music_Player():
         PATH (str): path to wherever the songs are saved
     """
 
-    PATH = 'Songs'
-
     def __init__(self):
         """Constructor which sets class-wide variables and loads the library"""
         self.playing = False
         self.song_number = 0 # index of which song played most recently
-
+        self.PATH = 'Songs'
         self.library = []
         i = 0
-        for file_name in os.listdir(PATH):
-            self.library[i] = file_name
+        for file_name in os.listdir(self.PATH):
+            self.library.append(file_name)
             i += 1
         self.current_playing = SoundLoader.load(self.library[0])
 
