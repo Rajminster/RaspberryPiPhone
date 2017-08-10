@@ -9,6 +9,7 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.listview import ListView
 from kivy.base import runTouchApp
+from kivy.uix.screenmanager import ScreenManager,Screen, SwapTransition, CardTransition
 
 
 class MainView(ListView):
@@ -24,7 +25,20 @@ class MessageApp(App):
         for i in range(12):
             layout.add_widget(Button(text='Contact ' + str(i)))
         root.add_widget(layout)
-        return root
+        # return root
+        return ScreenManagement()
+
+class ScreenManagement(ScreenManager):
+    ScreenManager.transition =  CardTransition()
+    pass
+
+class ScreenOne(Screen):
+    def switch(self):
+        #here you can insert any python logic you like
+        self.parent.current = 'Second'
+
+class ScreenTwo(Screen):
+    pass
 
 if __name__ == '__main__':
     home = MessageApp()
