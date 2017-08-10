@@ -14,7 +14,9 @@
             size: 100,100
             size_hint: None, None
             text: 'screen 1, press me to switch to screen 2, defined in python'
-            on_press: root.switch()
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.switch()
 <ScreenTwo>:
     name: 'Second'
     id: screen2
@@ -28,7 +30,9 @@
             size: 100,100
             size_hint: None, None
             text: 'screen 2, press me to switch to screen 1, defined in kvlang'
-            on_press: app.root.current = 'First'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.switch()
 
 <ScreenManagement>:
     ScreenOne:

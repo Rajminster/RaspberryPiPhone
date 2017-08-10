@@ -10,12 +10,6 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.listview import ListView
 from kivy.base import runTouchApp
 from kivy.uix.screenmanager import ScreenManager,Screen, SwapTransition, CardTransition
-
-
-class MainView(ListView):
-    def __init__(self, **kwargs):
-        super(MainView, self).__init__(
-            item_strings=[str(index) for index in range(100)])
 class MessageApp(App):
     def build(self):
         root = FloatLayout()
@@ -38,7 +32,9 @@ class ScreenOne(Screen):
         self.parent.current = 'Second'
 
 class ScreenTwo(Screen):
-    pass
+    def switch(self):
+        #here you can insert any python logic you like
+        self.parent.current = 'First'
 
 if __name__ == '__main__':
     home = MessageApp()

@@ -14,10 +14,9 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import AsyncImage, Image
-import multiprocessing
-from gallery import gallery
 from gallery.gallery import GalleryApp
-
+from message.message import MessageApp
+import multiprocessing
 
 class HomeScreenApp(App):
     def build(self):
@@ -35,8 +34,8 @@ class HomeScreenApp(App):
         y = 395
         col = 1
 
-        button = HomeButton(size_hint=(.11, .07), pos=(214, 7))
-        button.opacity = 0.3
+        button = HomeButton(size_hint=(.47, .47), pos=(216, 12))
+        button.opacity = 0.1
         image = Image(source='Home_Button.png', allow_stretch=False, pos=(0,-365))
         root.add_widget(button)
         root.add_widget(image)
@@ -69,16 +68,15 @@ class HomeScreenApp(App):
 class HomeButton(ButtonBehavior, Image):
     def __init__(self, **kwargs):
         super(HomeButton, self).__init__(**kwargs)
-        self.source = 'atlas://data/images/defaulttheme/checkbox_off'
 
     def on_press(self):
-        self.source = 'atlas://data/images/defaulttheme/checkbox_on'
         app = GalleryApp()
         p = multiprocessing.Process(target=app.run)
         p.start()
 
     def on_release(self):
-        self.source = 'atlas://data/images/defaulttheme/checkbox_off'
+        pass
+
 
 if __name__ == '__main__':
     home = HomeScreenApp()
