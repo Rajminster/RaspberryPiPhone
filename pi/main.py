@@ -5,6 +5,7 @@ import kivy
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty, Logger
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 
 # kivy.require('1.0.6')  # replace with your current kivy version !
@@ -12,9 +13,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import AsyncImage, Image
-from kivy.uix.label import Label
+import multiprocessing
+from gallery import gallery
+from gallery.gallery import GalleryApp
 
 
 class HomeScreenApp(App):
@@ -33,7 +35,7 @@ class HomeScreenApp(App):
         y = 395
         col = 1
 
-        button = Button(size_hint=(.11, .07), pos=(214, 7))
+        button = HomeButton(size_hint=(.11, .07), pos=(214, 7))
         button.opacity = 0.3
         image = Image(source='Home_Button.png', allow_stretch=False, pos=(0,-365))
         root.add_widget(button)
@@ -63,6 +65,20 @@ class HomeScreenApp(App):
         uproot.add_widget(root)
         return uproot
 
+
+class HomeButton(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super(HomeButton, self).__init__(**kwargs)
+        self.source = 'atlas://data/images/defaulttheme/checkbox_off'
+
+    def on_press(self):
+        self.source = 'atlas://data/images/defaulttheme/checkbox_on'
+        app = GalleryApp()
+        p = multiprocessing.Process(target=app.run)
+        p.start()
+
+    def on_release(self):
+        self.source = 'atlas://data/images/defaulttheme/checkbox_off'
 
 if __name__ == '__main__':
     home = HomeScreenApp()
