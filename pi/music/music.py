@@ -33,13 +33,13 @@ class Music_Player():
         """Constructor which sets class-wide variables and loads the library"""
         self.playing = False
         self.song_number = 0 # index of which song played most recently
-        self.PATH = 'Songs'
+        self.PATH = 'Songs/'
         self.library = []
         i = 0
         for file_name in os.listdir(self.PATH):
             self.library.append(file_name)
             i += 1
-        self.current_playing = SoundLoader.load('Songs/' + self.library[0])
+        self.current_playing = SoundLoader.load(self.PATH + self.library[0])
         self.current_playing.play()
 
     def play(self):
