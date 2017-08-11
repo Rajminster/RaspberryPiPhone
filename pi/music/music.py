@@ -126,12 +126,12 @@ class OtherScreen(Screen):
     def sliderProgress(self, value):
         self.label.text = str(value)
 
+sm = ScreenManager()
+sm.add_widget(ListScreen(name='list'))
+sm.add_widget(OtherScreen(name='other'))
 
 class MusicApp(App):
     def build(self):
-        sm = ScreenManager()
-        sm.add_widget(ListScreen(name='list'))
-        sm.add_widget(OtherScreen(name='other'))
 
         Window.size = (480, 800)
         Window.fullscreen = False
