@@ -767,9 +767,3 @@ def set_time(time):
 # AT+CMMSINIT initialize MMS function
 # AT+CMMSCURL="link" sets MMS center based on URL
 ###########################################################################
-
-if __name__ == '__main__':
-    while True:
-        get_model()
-        print _get_output()
-        sleep(4)
