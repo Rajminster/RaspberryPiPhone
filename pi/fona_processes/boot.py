@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+from threading import Lock
+
 from call_thread import Call_Thread
 from sms_thread import SMS_Thread
-from threading import Lock
-from ui_thread import UI_Thread
+from main_thread import Main_Thread
 
 __author__ = 'Nikola Istvanic'
 __date__ = '2017-05-30'
@@ -17,7 +18,7 @@ At the time of the Raspberry Pi's boot, the operations of the mobile telephone
 task by creating three threading.Lock objects.
 
 fona_lock is a lock object which controls thread access to the FONA device
-serial port. This lock is required by all threads (call, sms, and UI) because
+serial port. This lock is required by all threads (call, sms, and main) because
 each thread at some point will send a command to the FONA device.
 
 call_lock and sms_lock are both used to limit one thread to write to a text file
@@ -33,4 +34,4 @@ if __name__ == '__main__':
     sms_lock = Lock()
     Call_Thread(fona_lock, call_lock).start()
     SMS_Thread(fona_lock, sms_lock).start()
-    UI_Thread(fona_lock, call_lock, sms_lock).start()
+    Main_Thread(fona_lock, call_lock, sms_lock).start()

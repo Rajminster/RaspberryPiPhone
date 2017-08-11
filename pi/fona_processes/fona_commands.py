@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 from time import sleep
 
 from fona import _get_output, _send_command, _send_end_signal
