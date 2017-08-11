@@ -39,7 +39,8 @@ class Music_Player():
         for file_name in os.listdir(self.PATH):
             self.library.append(file_name)
             i += 1
-        self.current_playing = SoundLoader.load(self.library[0])
+        self.current_playing = SoundLoader.load('Songs/' + self.library[0])
+        self.current_playing.play()
 
     def play(self):
         """Play the song which is labeled as current_playing"""
