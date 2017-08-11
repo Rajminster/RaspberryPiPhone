@@ -128,9 +128,6 @@ class OtherScreen(Screen):
 
 
 class MusicApp(App):
-    def __init__(self):
-        pass
-
     def build(self):
         sm = ScreenManager()
         sm.add_widget(ListScreen(name='list'))
