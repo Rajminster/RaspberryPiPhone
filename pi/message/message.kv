@@ -5,15 +5,16 @@
     name: 'First'
     id: screen1
     FloatLayout:
+        id:list
         canvas.before:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: '../Blank_UI.png'
+                source: 'Blank_UI.png'
         Button:
             size: 100,100
             size_hint: None, None
-            text: 'screen 1, press me to switch to screen 2, defined in python'
+            text: 'List'
             on_press:
                 root.manager.transition.direction = 'left'
                 root.switch()
@@ -21,15 +22,16 @@
     name: 'Second'
     id: screen2
     FloatLayout:
+        id:convo
         canvas.before:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: '../Blank_UI.png'
+                source: 'Blank_UI.png'
         Button:
             size: 100,100
             size_hint: None, None
-            text: 'screen 2, press me to switch to screen 1, defined in kvlang'
+            text: 'Convo'
             on_press:
                 root.manager.transition.direction = 'right'
                 root.switch()

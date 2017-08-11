@@ -70,7 +70,7 @@ class HomeButton(ButtonBehavior, Image):
         super(HomeButton, self).__init__(**kwargs)
 
     def on_press(self):
-        app = GalleryApp()
+        app = MessageApp()
         p = multiprocessing.Process(target=app.run)
         p.start()
 
