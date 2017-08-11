@@ -44,11 +44,6 @@ class Music_Player():
         if self.current_playing:
             self.current_playing.play()
             self.playing = True
-        else:
-            ####################################################################
-            #          TODO: write a try except block to handle this           #
-            ####################################################################
-            raise TypeError('Song selected is None')
 
     def pause(self):
         """Pause any playing song"""
@@ -138,5 +133,4 @@ class MusicApp(App):
         return sm
 
 if __name__ == '__main__':
-    home = MusicApp()
-    home.run()
+    MusicApp().run()
