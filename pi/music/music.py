@@ -3,15 +3,17 @@ from os.path import abspath, dirname
 from Canvas import Rectangle
 
 from kivy.app import App, runTouchApp
+from kivy.clock import mainthread
 from kivy.core.window import Window
 from kivy.core.audio import SoundLoader
-from kivy.graphics.instructions import Canvas
+from kivy.graphics.instructions import Canvas, Image
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
-from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.screenmanager import Screen, ScreenManager, CardTransition
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.slider import Slider
 
@@ -31,13 +33,14 @@ class Music_Player():
         """Constructor which sets class-wide variables and loads the library"""
         self.playing = False
         self.song_number = 0 # index of which song played most recently
-        self.PATH = 'Songs'
+        self.PATH = 'Songs/'
         self.library = []
         i = 0
         for file_name in os.listdir(self.PATH):
             self.library.append(file_name)
             i += 1
-        self.current_playing = SoundLoader.load(self.library[0])
+        self.current_playing = SoundLoader.load(self.PATH + self.library[0])
+        self.current_playing.play()
 
     def play(self):
         """Play the song which is labeled as current_playing"""
@@ -75,25 +78,43 @@ class Music_Player():
 class ListScreen(Screen):
     def __init__(self, **kwargs):
         super(ListScreen,self).__init__(**kwargs)
+        self.on_enter()
+
+    def changer(self, *args):
+        self.parent.current = 'other'
+
+    @mainthread
+    def on_enter(self):
+        layout = self.ids.listlayout
         box1 = BoxLayout(orientation='vertical')
         btn1 = Button(text='go to other')
         btn1.bind(on_press=self.changer)
-        for i in range(1000):
-            btn = Button(text=str('A button #'))
+        for i in range(10):
+            btn = Button(text=str('A button #'), size_hint = (None,None), on_press = self.changer)
             box1.add_widget(btn)
         root = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
         root.add_widget(box1)
-
-    def changer(self, *args):
-        self.manager.current = 'other'
+        layout.add_widget(root)
+        print 'Test'
 
 class OtherScreen(Screen):
     def __init__(self, **kwargs):
         super(OtherScreen,self).__init__(**kwargs)
+        self.on_enter()
+
+    def changer(self, *args):
+        self.parent.current = 'list'
+
+    def sliderProgress(self, value):
+        self.label.text = str(value)
+
+    @mainthread
+    def on_enter(self):
+        layout = self.ids.otherlayout
         float = FloatLayout()
         player = Music_Player()
         self.label = Label(text='0.00')
-        s = Slider(min = 0, max=player.current_playing.length, value=0, value_track=True, value_track_color=[1, 0, 0, 1])
+        s = Slider(min=0, max=player.current_playing.length, value=0, value_track=True, value_track_color=[1, 0, 0, 1])
         s.step = .01
         btnp = Button(text='play')
         btnpau = Button(text='pause')
@@ -101,36 +122,30 @@ class OtherScreen(Screen):
         btn2 = Button(text='go to list')
         btnn = Button(text='next')
         pb = ProgressBar(max=player.current_playing.length)
-        pb.bind(value=self.sliderProgress(player.current_playing.get_pos()))
-        btn2.bind(on_press=self.changer)
-        btnp.bind(on_press=player.play())
-        btnpau.bind(on_press=player.pause())
-        btnb.bind(on_press=player.back())
-        btnn.bind(on_press=player.next())
-        s.bind(value=self.sliderProgress)
-        s.bind(on_touch_up=player.playAtTime(value))
+        # pb.bind(value=self.sliderProgress \
+        # (player \
+        # .current_playing. \
+        # get_pos()))
+        # btn2.bind(on_press=self.changer)
+        # btnp.bind(on_press=player.play())
+        # btnpau.bind(on_press=player.pause())
+        # btnb.bind(on_press=player.back())
+        # btnn.bind(on_press=player.next())
+        # s.bind(value=self.sliderProgress)
+        # s.bind(on_touch_up=player.playAtTime(value))
         float.add_widget(btn2)
         float.add_widget(s)
+        layout.add_widget(float)
 
-    def changer(self, *args):
-        self.manager.current = 'list'
-
-    def sliderProgress(self, value):
-        self.label.text = str(value)
-
-sm = ScreenManager()
-sm.add_widget(ListScreen(name='list'))
-sm.add_widget(OtherScreen(name='other'))
+class ScreenManagement(ScreenManager):
+    ScreenManager.transition =  CardTransition()
+    pass
 
 class MusicApp(App):
-    def __init__(self):
-        pass
-
     def build(self):
         Window.size = (480, 800)
         Window.fullscreen = False
-        par = dirname(dirname(abspath(__file__)))
-        return sm
+        return ScreenManagement()
 
 if __name__ == '__main__':
     MusicApp().run()
