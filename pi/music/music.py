@@ -106,7 +106,10 @@ class OtherScreen(Screen):
         btn2 = Button(text='go to list')
         btnn = Button(text='next')
         pb = ProgressBar(max=player.current_playing.length)
-        pb.bind(value=self.sliderProgress(player.current_playing.get_pos()))
+        pb.bind(value=self.sliderProgress \
+        (player \
+        .current_playing. \
+        get_pos()))
         btn2.bind(on_press=self.changer)
         btnp.bind(on_press=player.play())
         btnpau.bind(on_press=player.pause())
@@ -123,15 +126,16 @@ class OtherScreen(Screen):
     def sliderProgress(self, value):
         self.label.text = str(value)
 
-sm = ScreenManager()
-sm.add_widget(ListScreen(name='list'))
-sm.add_widget(OtherScreen(name='other'))
 
 class MusicApp(App):
     def __init__(self):
         pass
 
     def build(self):
+        sm = ScreenManager()
+        sm.add_widget(ListScreen(name='list'))
+        sm.add_widget(OtherScreen(name='other'))
+
         Window.size = (480, 800)
         Window.fullscreen = False
         par = dirname(dirname(abspath(__file__)))
