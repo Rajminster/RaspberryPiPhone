@@ -2,6 +2,8 @@ from os.path import abspath, dirname
 
 from Canvas import Rectangle
 
+from kivy.properties import NumericProperty
+
 from kivy.app import App, runTouchApp
 from kivy.clock import mainthread
 from kivy.core.window import Window
@@ -98,6 +100,7 @@ class ListScreen(Screen):
         print 'Test'
 
 class OtherScreen(Screen):
+    slider_val = NumericProperty(0)
     def __init__(self, **kwargs):
         super(OtherScreen,self).__init__(**kwargs)
         self.on_enter()
@@ -105,7 +108,7 @@ class OtherScreen(Screen):
     def changer(self, *args):
         self.parent.current = 'list'
 
-    def sliderProgress(self, value):
+    def sliderProgress(self, instance, value):
         self.label.text = str(value)
 
     @mainthread
@@ -113,8 +116,8 @@ class OtherScreen(Screen):
         layout = self.ids.otherlayout
         float = FloatLayout()
         player = Music_Player()
-        self.label = Label(text='0.00')
-        s = Slider(min=0, max=player.current_playing.length, value=0, value_track=True, value_track_color=[1, 0, 0, 1])
+        self.label = Label(text=str(self.slider_val))
+        s = Slider(min=0, max=player.current_playing.length, value_track=True, value_track_color=[1, 0, 0, 1])
         s.step = .01
         btnp = Button(text='play')
         btnpau = Button(text='pause')
@@ -122,19 +125,18 @@ class OtherScreen(Screen):
         btn2 = Button(text='go to list')
         btnn = Button(text='next')
         pb = ProgressBar(max=player.current_playing.length)
-        pb.bind(value=lambda x:self.sliderProgress \
-        (player \
-        .current_playing. \
-        get_pos()))
+        pb.bind(value=lambda
+            x:self.sliderProgress(player.current_playing.get_pos()))
         btn2.bind(on_press=self.changer)
         btnp.bind(on_press=lambda x:player.play())
         btnpau.bind(on_press=lambda x:player.pause())
         btnb.bind(on_press=lambda x:player.back())
         btnn.bind(on_press=lambda x:player.next())
         s.bind(value=self.sliderProgress)
-        s.bind(on_touch_up=lambda x:player.playAtTime(value))
+        s.bind(on_touch_up=lambda x, y:player.playAtTime(self.sliderProgress))
         float.add_widget(btn2)
         float.add_widget(s)
+        layout.add_widget(self.label)
         layout.add_widget(float)
 
 class ScreenManagement(ScreenManager):
