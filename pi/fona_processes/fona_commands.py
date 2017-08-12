@@ -19,54 +19,15 @@ MIMNUM = 0
 FULL = 1
 DISABLE = 4
 
-def check_connection():
-    """Checks if the FONA 2G device can be connected to successfully.
-
-    This is accomplished by sending the AT command to the FONA device serial
-    port. Whenever this command is sent, 'OK' will be outputted to the serial
-    port if there is a successful connection.
-
-    If connecting to the FONA device is unsuccessful, the FONA device will not
-    output OK after which this method will raise an IOError which signals to the
-    caller that there was not a successful connection. This method should be
-    called first in any series of methods that interact with the FONA device to
-    initially ensure a proper connection exists.
-
-    Raises:
-        IOError if the Raspberry Pi cannot connect to the FONA device
-    """
-    _send_command('AT')
-    if 'OK' in _get_output():
-        print '\n***\n*** SUCCESSFUL connecting to FONA\n***'
-    else:
-        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***'
-        raise IOError('\n***\n*** Unable connecting to FONA\n***')
-
-def check_output(output):
-    """Checks if the FONA 2G device can be connected to successfully.
-
-    This is accomplished by checking if the output of entering a command results
-    in a string array whose last entry is the string OK.
-
-    Raises:
-        IOError if the Raspberry Pi cannot connect to the FONA device
-    """
-    if output[len(output) - 1] != 'OK':
-        print '\n***\n*** UNSUCCESSFUL connecting to FONA\n***'
-        raise IOError('\n***\n*** Unable connecting to FONA\n***')
-    print '\n***\n*** SUCCESSFUL connecting to FONA\n***'
-
 def get_time():
     """
     """
-    check_connection()
     _send_command('AT+CIPGSMLOC=1,1')
     return _get_output()
 
 def get_lat_long():
     """
     """
-    check_connection()
     _send_command('AT+CIPGSMLOC=1,1')
     return _get_output()
 
@@ -83,23 +44,19 @@ def get_model():
         String of FONA model and revision
     """
     _send_command('ATI')
-    output = _get_output()
-    check_output(output)
-    return output
+    return _get_output()
 
 def get_simcard_number():
     """Send AT+CCID command to output the SIM card identifier (outputs
     Integrated Circuit Card ID (CCID)).
 
-    First checks if there is a successful connection. If so, the command for
-    outputting SIM card number is sent, and the output of the FONA
-    is then returned; if a successful connection was not obtained, the
+    The command for outputting SIM card number is sent, and the output of the
+    FONA is then returned; if a successful connection was not obtained, the
     method raises the IOError to the caller.
 
     Returns:
         String of SIM card identifier
     """
-    check_connection()
     _send_command('AT+CCID')
     return _get_output()
 
@@ -118,7 +75,6 @@ def get_reception():
     Returns:
         String of reception
     """
-    check_connection()
     _send_command('AT+CSQ')
     return _get_output()[1].split(',')[0].split(' ')[1]
 
@@ -135,7 +91,6 @@ def get_carrier_name():
     Returns:
         String of carrier name
     """
-    check_connection()
     _send_command('AT+CSPN')
     return _get_output()
 
@@ -152,7 +107,6 @@ def get_battery_percentage():
         where the percentage is the number between the 0 and 4220 (in this case,
         the FONA device is 100% charged)
     """
-    check_connection()
     _send_command('AT+CBC')
     return _get_output()
 
@@ -177,7 +131,6 @@ def send_sms(number, message):
         message (str): the message part of the SMS to be sent to the phone
         number
     """
-    check_connection()
     _send_command('AT+CMGF=1')
     _send_command('AT+CMGS="' + number + '"')
     _send_command(message)
@@ -215,7 +168,6 @@ def sms_received():
         If any new SMSs have been received, this method returns non zero (the
         number of new SMSs unaccounted for); otherwise it returns zero
     """
-    check_connection()
     _send_command('AT+CPMS?')
     sms_received = int(_get_output()[1].split(',')[1])
     f = open('sms_record.txt', 'r')
@@ -289,7 +241,6 @@ def get_all_sms():
         Array of sender phone number, SMS timestamp, and message tuples of all
         SMSs received by the FONA device
     """
-    check_connection()
     _send_command('AT+CMGF=1')
     _send_command('AT+CSDH=1')
     _send_command('AT+CPMS?')
@@ -374,7 +325,6 @@ def get_n_newest_sms(n):
         Array of sender phone number, message timestamp, and message contents
         tuples for newest SMSs received
     """
-    check_connection()
     _send_command('AT+CPMS?')
     sms_received = int(_get_output()[1].split(',')[1])
     if n > sms_received or n < 1:
@@ -420,7 +370,6 @@ def get_n_oldest_sms(n):
         Array of sender phone number, message timestamp, and message contents
         tuples for oldest SMSs received
     """
-    check_connection()
     _send_command('AT+CPMS?')
     sms_received = int(_get_output()[1].split(',')[1])
     if n > sms_received or n < 1:
@@ -459,7 +408,6 @@ def phone_status():
         String of the current status of phone activity. Values can only be 0, 2,
         3, or 4
     """
-    check_connection()
     _send_command('AT+CPAS')
     return _get_output()[1].split(' ')[1]
 
@@ -474,7 +422,6 @@ def call_number(number):
         number (str): string of the phone number to call. NOTE: this phone
         number should contain an international code.
     """
-    check_connection()
     _send_command('ATD' + number + ';')
 
 def answer_call():
@@ -483,7 +430,6 @@ def answer_call():
     If a call is incoming, this method will send the ATA command which instructs
     the FONA device to answer that call.
     """
-    check_connection()
     _send_command('ATA')
 
 def end_call():
@@ -527,7 +473,6 @@ def start_audio(file_path):
     Arg:
         file_path (str): location of the audio file to be played
     """
-    check_connection()
     _send_command('AT+CMEDPLAY=1,' + file_path + ',0,50')
 
 def stop_audio(file_path):
@@ -541,7 +486,6 @@ def stop_audio(file_path):
     Arg:
         file_path (str): location of the audio file to be played
     """
-    check_connection()
     _send_command('AT+CMEDPLAY=0,' + file_path + ',0,50')
 
 def pause_audio(file_path):
@@ -555,7 +499,6 @@ def pause_audio(file_path):
     Arg:
         file_path (str): location of the audio file to be played
     """
-    check_connection()
     _send_command('AT+CMEDPLAY=2,' + file_path + ',0,50')
 
 def play_audio(file_path):
@@ -569,7 +512,6 @@ def play_audio(file_path):
     Arg:
         file_path (str): location of the audio file to be played
     """
-    check_connection()
     _send_command('AT+CMEDPLAY=3,' + file_path + ',0,50')
 
 def set_audio_file_volume(volume):
@@ -587,13 +529,11 @@ def set_audio_file_volume(volume):
     """
     if volume < 0 or volume > 100:
         raise ValueError('\n***\n*** Out of range value for volume\n***')
-    check_connection()
     _send_command('AT+CMEDIAVOL=' + volume)
 
 def start_voice_recording():
     """
     """
-    check_connection()
     # format: AT+CREC=1, file_path, 1 (for WAV format), 0 (use int value for how long you want the recording to be), 0 (for FAT format), 3 (highest quality), 0 (MIC1)
     _send_command('AT+CREC=1')
 
@@ -612,123 +552,94 @@ def set_speaker_volume(volume):
     """
     if volume < 0 or volume > 9:
         raise ValueError('\n***\n*** Out of range value for volume\n***')
-    check_connection()
     _send_command('ATL' + volume)
 
 def echo_on():
-    check_connection()
     _send_command('ATE1')
 
 def echo_off():
-    check_connection()
     _send_command('ATE0')
 
 def factory_reset():
-    check_connection()
     _send_command('AT&F0')
 
 def enable_caller_id():
-    check_connection()
     _send_command('AT+CLIP=1')
 
 def disable_caller_id():
-    check_connection()
     _send_command('AT+CLIP=0')
 
 def set_ringtone_volume(volume):
     if volume < 0 or volume > 100:
         raise ValueError('\n***\n*** Out of range value for volume\n***')
-    check_connection()
     _send_command('AT+CRSL=' + volume)
 
 def power_off():
-    check_connection()
     _send_command('AT+CPOWD=1')
 
 def get_local_timestamp():
-    check_connection()
     _send_command('AT+CLTS?')
 
 def get_service_provider():
-    check_connection()
     _send_command('AT+CSPN?')
 
 def open_microphone():
-    check_connection()
     _send_command('AT+CEXTERN=0')
 
 def close_microphone():
-    check_connection()
     _send_command('AT+CEXTERN=1')
 
 def initiate_tcp_connection(ip_address):
-    check_connection()
-    # 'AT+CIPSTART=2'
+    _send_command('AT+CIPSTART=2')
 
 def send_through_tcp(ip_address):
-    check_connection()
-    # 'AT+CIPSEND=2'
+    _send_command('AT+CIPSEND=2')
 
 def close_connection():
-    check_connection()
-    # 'AT+CIPCLOSE=0'
+    _send_command('AT+CIPCLOSE=0')
 
 def get_local_ip():
-    check_connection()
     _send_command('AT+CIFSR')
 
 def gsm_location():
-    check_connection()
     _send_command('AT+CIPGSMLOC=1')
 
 def set_sender_address(address, name):
-    check_connection()
     _send_command('AT+SMTPFROM=' + address + ',' + name)
 
 def set_recipient_address(address, name):
-    check_connection()
     _send_command('AT+SMTPRCPT=' + address + ',' + name)
 
 def set_email_subject(subject):
-    check_connection()
     _send_command('AT+SMTPSUB=' + subject)
 
 def set_email_body(body):
-    check_connection()
     _send_command('AT+SMTPBODY=' + str(len(body)))
     _send_command(body)
 
 def email_txt_file(file_name, length):
     # NOTE: length is the maximum length of a TXT file name
-    check_connection()
     _send_command('AT+SMTPFILE=1,' + file_name + ',' + length + ',0')
 
 def send_email():
-    check_connection()
     _send_command('AT+SMTPSEND')
 
 def set_pop3_server_account(server, user, password):
-    check_connection()
     _send_command('AT+POP3SRV=' + server + ',' + user + ',' + password)
 
 def pop_log_in():
-    check_connection()
     _send_command('AT+POP3IN')
 
 def get_email_num_size():
-    check_connection()
     _send_command('AT+POP3NUM')
 
 def get_email_size(number):
-    check_connection()
     _send_command('AT+POP3LIST=' + number)
 
 def set_delete_email(number):
-    check_connection()
     _send_command('AT+POP3DEL=' + number)
 
 def pop_log_out():
-    check_connection()
     _send_command('AT+POP3OUT')
 
 def set_phone_functionality(func):
@@ -740,28 +651,23 @@ def set_phone_functionality(func):
     """
     if func != MIMNUM or func != FULL or func != DISABLE:
         raise ValueError('\n***\n*** Invalid value for functionality\n***')
-    check_connection()
     _send_command('AT+CFUN=' + func)
 
 def pin_required():
     """Check to see if the PIN is required to be entered."""
-    check_connection()
     _send_command('AT+CPIN?')
     return _get_output()[1].split(':')[1]
 
 def network_registration():
-    check_connection()
     _send_command('AT+CREG?')
     return _get_output()
 
 def get_time():
-    check_connection()
     _send_command('AT+CCLK?')
     return _get_output()[1]
 
 def set_time(time):
     """Time is in format yy/MM/dd,hh:mm:ss+-zz."""
-    check_connection()
     _send_command('AT+CCLK="' + time + '"')
 
 ##########################################################################$
