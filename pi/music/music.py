@@ -122,17 +122,17 @@ class OtherScreen(Screen):
         btn2 = Button(text='go to list')
         btnn = Button(text='next')
         pb = ProgressBar(max=player.current_playing.length)
-        # pb.bind(value=self.sliderProgress \
-        # (player \
-        # .current_playing. \
-        # get_pos()))
-        # btn2.bind(on_press=self.changer)
-        # btnp.bind(on_press=player.play())
-        # btnpau.bind(on_press=player.pause())
-        # btnb.bind(on_press=player.back())
-        # btnn.bind(on_press=player.next())
-        # s.bind(value=self.sliderProgress)
-        # s.bind(on_touch_up=player.playAtTime(value))
+        pb.bind(value=lambda x:self.sliderProgress \
+        (player \
+        .current_playing. \
+        get_pos()))
+        btn2.bind(on_press=self.changer)
+        btnp.bind(on_press=lambda x:player.play())
+        btnpau.bind(on_press=lambda x:player.pause())
+        btnb.bind(on_press=lambda x:player.back())
+        btnn.bind(on_press=lambda x:player.next())
+        s.bind(value=self.sliderProgress)
+        s.bind(on_touch_up=lambda x:player.playAtTime(value))
         float.add_widget(btn2)
         float.add_widget(s)
         layout.add_widget(float)
