@@ -88,7 +88,7 @@ class Call_Thread(Thread):
         """
         while True:
             self.fona_lock.acquire()
-            if phone_status() == INCOMING:
+            if get_phone_status() == INCOMING:
                 self.call_lock.acquire()
                 self.call_signal.write('True')
                 self.call_signal.seek(0)

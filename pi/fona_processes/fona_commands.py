@@ -10,27 +10,31 @@ __version__ = '1.0'
 
 """General Purpose Library for 2G FONA Device.
 
-Using the methods defined in fona.py, this library allows for full use of the
-FONA device by sending specific commands to perform tasks such as receive SMS,
-send SMS, check FONA battery percentage, etc.
+Using methods defined in the fona.py file, this library defines useful functions
+which utilize these fona methods as building blocks to accomplish more complex
+tasks such as answer a call, send an email, or connect to another device using
+the TCP protocol.
+
+Using the 2G FONA UFL GSM US Edition SIM800 Series device, this library defines
+methods in the following order:
+    Diagnostic Information
+    Time & Location
+    Phone Functionality
+    Short Message Service
+    Audio
+    Email
+    Networking
+
+Describe what these methods look like.
 """
 
 MIMNUM = 0
 FULL = 1
 DISABLE = 4
 
-def get_time():
-    """
-    """
-    _send_command('AT+CIPGSMLOC=1,1')
-    return _get_output()
-
-def get_lat_long():
-    """
-    """
-    _send_command('AT+CIPGSMLOC=1,1')
-    return _get_output()
-
+################################################################################
+#                            DIAGNOSTIC INFORMATION                            #
+################################################################################
 def get_model():
     """Send ATI command to output the FONA identification information.
 
@@ -60,6 +64,22 @@ def get_simcard_number():
     _send_command('AT+CCID')
     return _get_output()
 
+def get_carrier_name():
+    """Send AT+CSPN command to output the name of the carrier.
+
+    First checks if there is a successful connection. If so, the command for
+    outputting carrier name is sent, and the output of the FONA is then
+    returned. If using a non-major carrier, it is possible for this method to
+    return a string array which contains the string ERROR. If this is the case,
+    this error string should be disregarded. If a successful connection was not
+    obtained, the method raises the IOError to the caller.
+
+    Returns:
+        String of carrier name
+    """
+    _send_command('AT+CSPN')
+    return _get_output()
+
 def get_reception():
     """Send AT+CSQ command to output the reception of the FONA.
 
@@ -78,21 +98,6 @@ def get_reception():
     _send_command('AT+CSQ')
     return _get_output()[1].split(',')[0].split(' ')[1]
 
-def get_carrier_name():
-    """Send AT+CSPN command to output the name of the carrier.
-
-    First checks if there is a successful connection. If so, the command for
-    outputting carrier name is sent, and the output of the FONA is then
-    returned. If using a non-major carrier, it is possible for this method to
-    return a string array which contains the string ERROR. If this is the case,
-    this error string should be disregarded. If a successful connection was not
-    obtained, the method raises the IOError to the caller.
-
-    Returns:
-        String of carrier name
-    """
-    _send_command('AT+CSPN')
-    return _get_output()
 
 def get_battery_percentage():
     """Send AT+CBC command to output the battery percentage of the FONA device.
@@ -110,6 +115,153 @@ def get_battery_percentage():
     _send_command('AT+CBC')
     return _get_output()
 
+def echo_on():
+    _send_command('ATE1')
+
+def echo_off():
+    _send_command('ATE0')
+
+def factory_reset():
+    _send_command('AT&F0')
+
+def power_off():
+    _send_command('AT+CPOWD=1')
+
+################################################################################
+#                                TIME & LOCATION                               #
+################################################################################
+def get_local_timestamp():
+    """
+    """
+    _send_command('AT+CLTS?')
+
+def get_time():
+    """
+    """
+    _send_command('AT+CIPGSMLOC=1,1')
+    return _get_output()
+
+def gsm_location():
+    _send_command('AT+CIPGSMLOC=1')
+
+def get_lat_long():
+    """
+    """
+    _send_command('AT+CIPGSMLOC=1,1')
+    return _get_output()
+
+def get_time():
+    _send_command('AT+CCLK?')
+    return _get_output()[1]
+
+def set_time(time):
+    """Time is in format yy/MM/dd,hh:mm:ss+-zz."""
+    _send_command('AT+CCLK="' + time + '"')
+
+################################################################################
+#                              PHONE FUNCTIONALITY                             #
+################################################################################
+def get_phone_status():
+    """Output the status of the phone activity.
+
+    To output the status, this method first checks the connection between the
+    Raspberry Pi and the FONA device. If there exists a secure connection, then
+    this method will send the command AT+CPAS which makes the FONA device output
+    the status of the phone. Depending on the output of this method, it can be
+    determined if there is an incoming call to the FONA, no calls, or a call in
+    process.
+
+    After writing the AT+CPAS command to the FONA device, its output is in the
+    format:
+        ['AT+CPAS', '+CPAS: 0', '', 'OK']
+    So the second element of the string array, second element on the split of
+    whitespace is returned. If this value is a 0, then this means there are no
+    calls occurring or incoming. 2 means the status is unknown. 3 means there is
+    an incoming call, 4 means there is a call in progress.
+
+    Returns:
+        String of the current status of phone activity. Values can only be 0, 2,
+        3, or 4
+    """
+    _send_command('AT+CPAS')
+    return _get_output()[1].split(' ')[1]
+
+def set_phone_functionality(func):
+    """Sets phone functionality.
+
+    MINIMUM = 0: the smallest amount of functionality
+    FULL    = 1: full phone functionality
+    DISABLE = 4: disable phone transmission and receive
+    """
+    if func != MIMNUM or func != FULL or func != DISABLE:
+        raise ValueError('\n***\n*** Invalid value for functionality\n***')
+    _send_command('AT+CFUN=' + func)
+
+def call_number(number):
+    """Call the phone number parameter.
+
+    First check for a successful connection between the FONA device and the
+    Raspberry Pi. If this check is successful, then send the command for
+    calling a phone number.
+
+    Arg:
+        number (str): string of the phone number to call. NOTE: this phone
+        number should contain an international code.
+    """
+    _send_command('ATD' + number + ';')
+
+def answer_call():
+    """Answer incoming call to this FONA device.
+
+    If a call is incoming, this method will send the ATA command which instructs
+    the FONA device to answer that call.
+    """
+    _send_command('ATA')
+
+def end_call():
+    """Ends any current call in process.
+
+    Ends call in process by sending the ATH command. Since this method should be
+    called whenever a call is in process, this method does not check for
+    successful connection with the FONA device."""
+    _send_command('ATH')
+
+def mute_call():
+    """Mutes any call in process.
+
+    Turns on muting for the current call in process. This method will only mute
+    a call if a call is in process.
+    """
+    _send_command('AT+CMUT=1')
+
+def unmute_call():
+    """Turns off mute setting for a current call in process.
+
+    This method will only turn off the mute setting for a call that is in
+    process and will not do anything otherwise.
+    """
+    _send_command('AT+CMUT=0')
+
+def set_ringtone_volume(volume):
+    if volume < 0 or volume > 100:
+        raise ValueError('\n***\n*** Out of range value for volume\n***')
+    _send_command('AT+CRSL=' + volume)
+
+def open_microphone():
+    _send_command('AT+CEXTERN=0')
+
+def close_microphone():
+    _send_command('AT+CEXTERN=1')
+
+    def enable_caller_id():
+    _send_command('AT+CLIP=1')
+
+def disable_caller_id():
+    _send_command('AT+CLIP=0')
+
+################################################################################
+#                             SHORT MESSAGE SERVICE                            #
+################################################################################
 def send_sms(number, message):
     """Send an SMS to the phone number which is given by the string parameter
     number.
@@ -386,76 +538,9 @@ def get_n_oldest_sms(n):
         messages['message'].append(_parse_message(output))
     return messages
 
-def phone_status():
-    """Output the status of the phone activity.
-
-    To output the status, this method first checks the connection between the
-    Raspberry Pi and the FONA device. If there exists a secure connection, then
-    this method will send the command AT+CPAS which makes the FONA device output
-    the status of the phone. Depending on the output of this method, it can be
-    determined if there is an incoming call to the FONA, no calls, or a call in
-    process.
-
-    After writing the AT+CPAS command to the FONA device, its output is in the
-    format:
-        ['AT+CPAS', '+CPAS: 0', '', 'OK']
-    So the second element of the string array, second element on the split of
-    whitespace is returned. If this value is a 0, then this means there are no
-    calls occurring or incoming. 2 means the status is unknown. 3 means there is
-    an incoming call, 4 means there is a call in progress.
-
-    Returns:
-        String of the current status of phone activity. Values can only be 0, 2,
-        3, or 4
-    """
-    _send_command('AT+CPAS')
-    return _get_output()[1].split(' ')[1]
-
-def call_number(number):
-    """Call the phone number parameter.
-
-    First check for a successful connection between the FONA device and the
-    Raspberry Pi. If this check is successful, then send the command for
-    calling a phone number.
-
-    Arg:
-        number (str): string of the phone number to call. NOTE: this phone
-        number should contain an international code.
-    """
-    _send_command('ATD' + number + ';')
-
-def answer_call():
-    """Answer incoming call to this FONA device.
-
-    If a call is incoming, this method will send the ATA command which instructs
-    the FONA device to answer that call.
-    """
-    _send_command('ATA')
-
-def end_call():
-    """Ends any current call in process.
-
-    Ends call in process by sending the ATH command. Since this method should be
-    called whenever a call is in process, this method does not check for
-    successful connection with the FONA device."""
-    _send_command('ATH')
-
-def mute_call():
-    """Mutes any call in process.
-
-    Turns on muting for the current call in process. This method will only mute
-    a call if a call is in process.
-    """
-    _send_command('AT+CMUT=1')
-
-def unmute_call():
-    """Turns off mute setting for a current call in process.
-
-    This method will only turn off the mute setting for a call that is in
-    process and will not do anything otherwise.
-    """
-    _send_command('AT+CMUT=0')
-
+################################################################################
+#                                   AUDIO                                      #
+################################################################################
 def start_audio(file_path):
     """TODO: instead of 50 default volume, save volume to a file"""
     """Use the FONA device to begin playing an audio file, given its file path.
@@ -554,56 +639,9 @@ def set_speaker_volume(volume):
         raise ValueError('\n***\n*** Out of range value for volume\n***')
     _send_command('ATL' + volume)
 
-def echo_on():
-    _send_command('ATE1')
-
-def echo_off():
-    _send_command('ATE0')
-
-def factory_reset():
-    _send_command('AT&F0')
-
-def enable_caller_id():
-    _send_command('AT+CLIP=1')
-
-def disable_caller_id():
-    _send_command('AT+CLIP=0')
-
-def set_ringtone_volume(volume):
-    if volume < 0 or volume > 100:
-        raise ValueError('\n***\n*** Out of range value for volume\n***')
-    _send_command('AT+CRSL=' + volume)
-
-def power_off():
-    _send_command('AT+CPOWD=1')
-
-def get_local_timestamp():
-    _send_command('AT+CLTS?')
-
-def get_service_provider():
-    _send_command('AT+CSPN?')
-
-def open_microphone():
-    _send_command('AT+CEXTERN=0')
-
-def close_microphone():
-    _send_command('AT+CEXTERN=1')
-
-def initiate_tcp_connection(ip_address):
-    _send_command('AT+CIPSTART=2')
-
-def send_through_tcp(ip_address):
-    _send_command('AT+CIPSEND=2')
-
-def close_connection():
-    _send_command('AT+CIPCLOSE=0')
-
-def get_local_ip():
-    _send_command('AT+CIFSR')
-
-def gsm_location():
-    _send_command('AT+CIPGSMLOC=1')
-
+################################################################################
+#                                    EMAIL                                     #
+################################################################################
 def set_sender_address(address, name):
     _send_command('AT+SMTPFROM=' + address + ',' + name)
 
@@ -642,16 +680,20 @@ def set_delete_email(number):
 def pop_log_out():
     _send_command('AT+POP3OUT')
 
-def set_phone_functionality(func):
-    """Sets phone functionality.
+################################################################################
+#                                  NETWORKING                                  #
+################################################################################
+def initiate_tcp_connection(ip_address):
+    _send_command('AT+CIPSTART=2')
 
-    MINIMUM = 0: the smallest amount of functionality
-    FULL    = 1: full phone functionality
-    DISABLE = 4: disable phone transmission and receive
-    """
-    if func != MIMNUM or func != FULL or func != DISABLE:
-        raise ValueError('\n***\n*** Invalid value for functionality\n***')
-    _send_command('AT+CFUN=' + func)
+def send_through_tcp(ip_address):
+    _send_command('AT+CIPSEND=2')
+
+def close_connection():
+    _send_command('AT+CIPCLOSE=0')
+
+def get_local_ip():
+    _send_command('AT+CIFSR')
 
 def pin_required():
     """Check to see if the PIN is required to be entered."""
@@ -661,16 +703,3 @@ def pin_required():
 def network_registration():
     _send_command('AT+CREG?')
     return _get_output()
-
-def get_time():
-    _send_command('AT+CCLK?')
-    return _get_output()[1]
-
-def set_time(time):
-    """Time is in format yy/MM/dd,hh:mm:ss+-zz."""
-    _send_command('AT+CCLK="' + time + '"')
-
-##########################################################################$
-# AT+CMMSINIT initialize MMS function
-# AT+CMMSCURL="link" sets MMS center based on URL
-###########################################################################
