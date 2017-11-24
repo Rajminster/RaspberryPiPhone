@@ -71,13 +71,15 @@ class Signal_Thread(Thread):
         file because there is an incoming call to the FONA device; otherwise,
         there is no incoming call to the FONA device.
 
-        Returns:
+        Ret:
             True if the first line of the call_signal.txt file contains True
             which indicates there is an incoming call; False otherwise to
             indicate that there is no incoming call
         """
-        call_signal_file = open('.call_signal.txt', 'r')
-        return open('.call_signal.txt', 'r').readline() == '1'
+        call_signal_file = open('.call_signal.txt', 'r+')
+        r = call_signal_file.readline() == '1'
+        call_signal_file.close()
+        return r
 
     def _update_call_file(self):
         """Helper method to write to the call_signal.txt file False from this
@@ -89,9 +91,9 @@ class Signal_Thread(Thread):
         and the file is closed. After this method, the UI should be notified of
         this incoming call.
         """
-        file = open('.call_signal.txt', 'w+')
         self.call_lock.acquire()
-        file.write('False')
+        file = open('.call_signal.txt', 'w+')
+        file.write('0')
         file.close()
         self.call_lock.release()
 
@@ -104,7 +106,9 @@ class Signal_Thread(Thread):
         incoming call; otherwise, nothing will happen.
         """
         if self._check_call_signal():
+            self.logger.info('Call received, updating call signal')
             self._update_call_file()
+            self.logger.info('Updating UI for incoming call')
             #################### TODO ##########################
             # handle signalling GUI to handle an incoming call #
             ####################################################
@@ -118,12 +122,15 @@ class Signal_Thread(Thread):
         file because there is are incoming SMSs to the FONA device; otherwise,
         there are no SMSs received by the FONA device.
 
-        Returns:
+        Ret:
             True if the first line of the sms_signal.txt file contains True
             which indicates there are incoming SMSs; False otherwise to
             indicate that there are no incoming SMSs
         """
-        return open('sms_signal.txt', 'r').readline() == 'True'
+        sms_signal_file = open('.sms_signal.txt', 'r+')
+        r = sms_signal_file.readline() == '1'
+        call_signal_file.close()
+        return r
 
     def _update_sms_file(self):
         """Helper method to write to the sms_signal.txt file False from this
@@ -150,7 +157,9 @@ class Signal_Thread(Thread):
         new SMSs. Otherwise, nothing will happen.
         """
         if self._check_sms_signal():
+            self.logger.info('SMS received, updating SMS signal')
             self._update_sms_file()
+            self.logger.info('Updating UI for incoming SMS')
             #################### TODO ##########################
             # handle signalling GUI to handle an incoming SMS  #
             # make sure this has a timer for how long it stays #
@@ -184,23 +193,27 @@ class Signal_Thread(Thread):
         """
         ################## TODO ############################################################
         # probably don't do this immediately when Pi is turned on; give it a second or two #
-        # have a way to stop this whenever the Pi is about to be turned off                #
         ####################################################################################
-        self.call_lock.start()
-        self.sms_lock.start()
+        self.logger.info('Starting call and SMS threads')
+        self.call_thread.start()
+        self.sms_thread.start()
 
         while True:
             try:
+                self.logger.info('Checking for call')
                 self.check_call()
             except SerialException:
                 self.fona_lock.release()
+                self.logger.warn('Loss of connection to FONA device')
                 #########################################################
                 # TODO: handle loss of connection to FONA while running #
                 #########################################################
             try:
+                self.logger.info('Checking for SMS')
                 self.check_sms()
             except SerialException:
                 self.fona_lock.release()
+                self.logger.warn('Loss of connection to FONA device')
                 #########################################################
                 # TODO: handle loss of connection to FONA while running #
                 #########################################################
