@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Messaging
+GenericName=Messaging
+Comment=Raspberry Pi messaging application to accept and send Short Message Service
+Exec=/home/pi/messaging/ui.py
+Icon=messaging-coolname
+Terminal=false
+Categories=Chat
+Keywords=messaging;SMS;communication;texting

@@ -1,0 +1,41 @@
+
+#:kivy 1.8.0
+
+<ScreenOne>:
+    name: 'First'
+    id: screen1
+    FloatLayout:
+        id:list
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'Blank_UI.png'
+        Button:
+            size: 100,100
+            size_hint: None, None
+            text: 'List'
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.switch()
+<ScreenTwo>:
+    name: 'Second'
+    id: screen2
+    FloatLayout:
+        id:convo
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'Blank_UI.png'
+        Button:
+            size: 100,100
+            size_hint: None, None
+            text: 'Convo'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.switch()
+
+<ScreenManagement>:
+    ScreenOne:
+    ScreenTwo:
