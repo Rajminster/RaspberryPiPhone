@@ -14,8 +14,8 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import AsyncImage, Image
-from gallery.gallery import GalleryApp
-from message.message import MessageApp
+from apps.gallery.gallery import GalleryApp
+from apps.message.message import MessageApp
 import multiprocessing
 
 class HomeScreenApp(App):
@@ -36,12 +36,12 @@ class HomeScreenApp(App):
 
         button = HomeButton(size_hint=(.47, .47), pos=(216, 12))
         button.opacity = 0.1
-        image = Image(source='Home_Button.png', allow_stretch=False, pos=(0,-365))
+        image = Image(source='resources/Home_Button.png', allow_stretch=False, pos=(0,-365))
         root.add_widget(button)
         root.add_widget(image)
 
         curdir = dirname(__file__)
-        for filename in glob(join(curdir, 'home_UI_icons', '*')):
+        for filename in glob(join(curdir, 'resources/home_UI_icons', '*')):
             try:
                 # load the image
                 button = Button(size_hint=(.23, .132), pos=(x, y))
