@@ -14,16 +14,15 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import AsyncImage, Image
+from kivy.graphics import *
 from apps.gallery.gallery import GalleryApp
 from apps.message.message import MessageApp
 import multiprocessing
 
 class HomeScreenApp(App):
     def build(self):
+        #Builder.load_file('resources/HomeScreen.kv')
         uproot = BoxLayout()
-        # the root is created in pictures.kv
-        #root = GridLayout(cols=3)
-        #root.spacing = [10,-300]
         root = FloatLayout()
         Window.size = (480, 800)
         Window.fullscreen = False
@@ -33,7 +32,6 @@ class HomeScreenApp(App):
         x = 30
         y = 395
         col = 1
-
         button = HomeButton(size_hint=(.47, .47), pos=(216, 12))
         button.opacity = 0.1
         image = Image(source='resources/Home_Button.png', allow_stretch=False, pos=(0,-365))
