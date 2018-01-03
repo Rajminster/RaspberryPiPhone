@@ -35,14 +35,14 @@ class Music_Player():
         """Constructor which sets class-wide variables and loads the library"""
         self.playing = False
         self.song_number = 0 # index of which song played most recently
-        self.PATH = 'Songs/'
+        self.PATH = '/Users/Dharshan/Documents/RaspberryPiPhone/src/apps/music/Songs/'
         self.library = []
         i = 0
         for file_name in os.listdir(self.PATH):
             self.library.append(file_name)
             i += 1
         self.current_playing = SoundLoader.load(self.PATH + self.library[0])
-        self.current_playing.play()
+        # self.current_playing.play()
 
     def play(self):
         """Play the song which is labeled as current_playing"""
@@ -89,11 +89,12 @@ class ListScreen(Screen):
     def on_enter(self):
         layout = self.ids.listlayout
         box1 = BoxLayout(orientation='vertical')
-        btn1 = Button(text='go to other')
+        btn1 = Button(text='go to other', size=(200, 100), size_hint=(None,None))
         btn1.bind(on_press=self.changer)
-        for i in range(10):
-            btn = Button(text=str('A button #'), size_hint = (None,None), on_press = self.changer)
-            box1.add_widget(btn)
+        box1.add_widget(btn1)
+        # for i in range(5):
+        #     btn = Button(text=str('A button #'), size_hint = (None,None), on_press = self.changer)
+        #     box1.add_widget(btn)
         root = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
         root.add_widget(box1)
         layout.add_widget(root)
@@ -114,16 +115,16 @@ class OtherScreen(Screen):
     @mainthread
     def on_enter(self):
         layout = self.ids.otherlayout
-        float = FloatLayout()
+        floatEr = FloatLayout(size=(480,800))
         player = Music_Player()
         self.label = Label(text=str(self.slider_val))
-        s = Slider(min=0, max=player.current_playing.length, value_track=True, value_track_color=[1, 0, 0, 1])
+        s = Slider(min=0, max=player.current_playing.length, value_track=True, value_track_color=[1, 0, 0, 1], sensitivity='handle')
         s.step = .01
-        btnp = Button(text='play')
-        btnpau = Button(text='pause')
-        btnb = Button(text='back')
-        btn2 = Button(text='go to list')
-        btnn = Button(text='next')
+        btnp = Button(text='play', size=(96,72), pos = (20,20))
+        btnpau = Button(text='pause', size=(96,72), pos = (330,330))
+        btnb = Button(text='back', size=(96,72), pos = (150,150))
+        btn2 = Button(text='go to list', size=(96,72), pos = (550,550))
+        btnn = Button(text='next', size=(96,72), pos = (700,700))
         pb = ProgressBar(max=player.current_playing.length)
         pb.bind(value=lambda
             x:self.sliderProgress(player.current_playing.get_pos()))
@@ -134,10 +135,10 @@ class OtherScreen(Screen):
         btnn.bind(on_press=lambda x:player.next())
         s.bind(value=self.sliderProgress)
         s.bind(on_touch_up=lambda x, y:player.playAtTime(self.sliderProgress))
-        float.add_widget(btn2)
-        float.add_widget(s)
+        floatEr.add_widget(btn2)
+        floatEr.add_widget(s)
         layout.add_widget(self.label)
-        layout.add_widget(float)
+        layout.add_widget(floatEr)
 
 class ScreenManagement(ScreenManager):
     ScreenManager.transition =  CardTransition()
