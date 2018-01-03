@@ -34,9 +34,9 @@ class HomeScreenApp(App):
         y = 395
         col = 1
         button = HomeButton(size_hint=(.47, .47), pos=(216, 12))
-        button.opacity = 0.1
+        button.opacity = 0.5
         image = Image(source='resources/Home_Button.png', allow_stretch=False, pos=(0,-365))
-        root.add_widget(button)
+        #root.add_widget(button)
         root.add_widget(image)
 
         # curdir = dirname(__file__)
