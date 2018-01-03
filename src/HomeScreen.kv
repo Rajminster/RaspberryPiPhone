@@ -1,0 +1,15 @@
+<FloatLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'Home_Screen_Blank.png'
+    Button:
+        id:Music
+        size_hint:(.23, .132)
+        pos:(30, 395)
+        opacity:0.1
+        on_release: root.pout()
+    Image:
+        source:'resources/home_UI_icons/1 Music App.png'
+        center:(Music.center_x,Music.center_y)

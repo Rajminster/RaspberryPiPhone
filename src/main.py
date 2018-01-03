@@ -21,11 +21,12 @@ import multiprocessing
 
 class HomeScreenApp(App):
     def build(self):
-        #Builder.load_file('resources/HomeScreen.kv')
+        Builder.load_file('HomeScreen.kv')
         uproot = BoxLayout()
         root = FloatLayout()
         Window.size = (480, 800)
         Window.fullscreen = False
+        #Window.borderless = True
 
         # get any files into images directory
         #75 from left, 160 between
@@ -38,29 +39,31 @@ class HomeScreenApp(App):
         root.add_widget(button)
         root.add_widget(image)
 
-        curdir = dirname(__file__)
-        for filename in glob(join(curdir, 'resources/home_UI_icons', '*')):
-            try:
-                # load the image
-                button = Button(size_hint=(.23, .132), pos=(x, y))
-                image = Image(source=filename, allow_stretch=False)
-                image.size = (120,120)
-                button.add_widget(image)
-                image.center = (button.center_x,button.center_y)
-                # add to the main field
-                root.add_widget(button)
-                if col == 3:
-                    col = 1
-                    x = 30
-                    y -= 140
-                else:
-                    x += 160
-                    col += 1
-
-            except Exception as e:
-                Logger.exception('Pictures: Unable to load <%s>' % filename)
+        # curdir = dirname(__file__)
+        # for filename in glob(join(curdir, 'resources/home_UI_icons', '*')):
+        #     try:
+        #         # load the image
+        #         button = Button(size_hint=(.23, .132), pos=(x, y))
+        #         image = Image(source=filename, allow_stretch=False)
+        #         image.size = (120,120)
+        #         button.add_widget(image)
+        #         image.center = (button.center_x,button.center_y)
+        #         # add to the main field
+        #         root.add_widget(button)
+        #         if col == 3:
+        #             col = 1
+        #             x = 30
+        #             y -= 140
+        #         else:
+        #             x += 160
+        #             col += 1
+        #
+        #     except Exception as e:
+        #         Logger.exception('Pictures: Unable to load <%s>' % filename)
         uproot.add_widget(root)
         return uproot
+    def pout(self):
+        print ("Success")
 
 
 class HomeButton(ButtonBehavior, Image):

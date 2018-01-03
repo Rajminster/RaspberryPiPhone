@@ -35,14 +35,14 @@ class Music_Player():
         """Constructor which sets class-wide variables and loads the library"""
         self.playing = False
         self.song_number = 0 # index of which song played most recently
-        self.PATH = '/Users/Dharshan/Documents/RaspberryPiPhone/src/apps/music/Songs/'
+        self.PATH = 'Songs/'
         self.library = []
         i = 0
         for file_name in os.listdir(self.PATH):
             self.library.append(file_name)
             i += 1
         self.current_playing = SoundLoader.load(self.PATH + self.library[0])
-        # self.current_playing.play()
+        self.current_playing.play()
 
     def play(self):
         """Play the song which is labeled as current_playing"""
@@ -146,7 +146,7 @@ class OtherScreen(Screen):
         layout.add_widget(floatEr)
 
 class ScreenManagement(ScreenManager):
-    ScreenManager.transition =  CardTransition()
+    ScreenManager.transition = CardTransition()
     pass
 
 class MusicApp(App):
