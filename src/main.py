@@ -33,10 +33,11 @@ class HomeScreenApp(App):
         x = 30
         y = 395
         col = 1
-        button = HomeButton(size_hint=(.47, .47), pos=(216, 12))
-        button.opacity = 0.5
+
         image = Image(source='resources/Home_Button.png', allow_stretch=False, pos=(0,-365))
-        #root.add_widget(button)
+        button = HomeButton(size_hint=(.1,.06), pos=(216, 12))
+        button.opacity = 0.5
+        root.add_widget(button)
         root.add_widget(image)
 
         # curdir = dirname(__file__)
@@ -60,13 +61,13 @@ class HomeScreenApp(App):
         #
         #     except Exception as e:
         #         Logger.exception('Pictures: Unable to load <%s>' % filename)
-        uproot.add_widget(root)
-        return uproot
+        #uproot.add_widget(root)
+        return root
     def pout(self):
         print ("Success")
 
 
-class HomeButton(ButtonBehavior, Image):
+class HomeButton(Button):
     def __init__(self, **kwargs):
         super(HomeButton, self).__init__(**kwargs)
 
