@@ -15,14 +15,10 @@ if __name__ == '__main__':
 
     logger.info('Setup FONA device; press ENTER when ready to begin test')
     input_string = raw_input()
-    
-    get_model()
 
-    logger.info('FONA output:\n%s' % get_output())
+    logger.info('FONA output:\n%s' % get_model())
     logger.info('Command sent SUCCESSFULLY. Remove FONA device; press ENTER '
         'when ready to begin test')
     input_string = raw_input()
 
-    get_model()
-
-    logger.info('Command sent UNSUCCESSFULLY. Output:\n%s' % get_output())
+    logger.info('Command sent UNSUCCESSFULLY. Output:\n%s' % get_model())
