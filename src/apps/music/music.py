@@ -63,6 +63,7 @@ class Music_Player():
 
     def next(self):
         """Play the next song listed in the library"""
+        # TODO: Need to do checks to see if there is a next song (edge case: 1 song)
         self.current_playing.unload()
         self.song_number += 1
         self.current_playing = SoundLoader.load(self.library[self.song_number % len(library)])
@@ -77,6 +78,11 @@ class Music_Player():
         if self.playing:
             self.play()
 
+def AudioSlider(Slider):
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            # Work I guess (Dunno how to tell it to do what it does)
+            return True
 class ListScreen(Screen):
     def __init__(self, **kwargs):
         super(ListScreen,self).__init__(**kwargs)
