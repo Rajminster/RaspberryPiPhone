@@ -1,0 +1,791 @@
+# Local Variables:
+# org-src-preserve-indentation: t
+# End:
+
+* Shitpost
+Writing stuff here because I need a place to write in.
+
+So I forgot about the piPhone (probably shouldn't do that to friends) but I'll have to make amends by doing this shit.
+
+Shouldn't delete files if they're stupid and obnoxious. Shouldn't delete files if they're stupid and obnoxious. Shouldn't delete files if they're stupid and obnoxious.
+Thanks to past Vi's shitty mistake, I have to create this from scratch. Oh well.
+
+All the pictures Nikola took for me are in the folder piPhoneComponentDimensions
+
+Because I'm lazy, I'll be making this in Solidworks. Really think this would be better done in openSCAD because that would make the project completely opensource. Fuck it, i'll do it with openSCAD.
+Because I'm trying to make future self lazy, I'll make this with openSCAD. Using solidPython because I think they might need to auto-generate this if they publish it (different components might be used) so Python will be handy here.
+
+Also, way too lazy to install Solidworks or go to the library.
+
+Also, this is the kind of shit that needs to be documented well and text is always better than the notes Solidworks has.
+Oddly enough, this is the kind of stuff that could be modeled quite well in Haskell. Seems like it's a small library so let's try that in the future.
+
+
+* Bash script to recompile whenever it detects a change
+
+Pity that openscad isn't integrated into emacs. 
+While we wait for emacs to devour all software, here's a bash script to check if the file we're tangling to has changed. 
+If it has, it will ask python to recompile. Don't forget to make this executable!
+
+#+BEGIN_SRC bash :tangle recompile.sh
+#!/bin/bash
+
+   
+if python3 phoneCase.py ; then   # Compile it atleast once.
+    echo "Compiled"
+fi
+
+
+while true
+do
+    sum1="$(md5 phoneCase.py)"
+    sleep 2
+    sum2="$(md5 phoneCase.py)"
+    if [ "$sum1" != "$sum2" ];
+    then
+        echo "Different. Recompiling."
+        if python3 phoneCase.py ; then   # Compile it atleast once.
+          echo "Compiled"
+        fi
+    fi
+done
+#+END_SRC
+
+* Imports
+#+BEGIN_SRC python :tangle phoneCase.py
+from __future__ import division
+import os
+import sys
+import re
+import subprocess
+from itertools import permutations
+
+# Assumes SolidPython is in site-packages or elsewhwere in sys.path
+from solid import *
+from solid.utils import *
+
+
+import math
+import functools
+
+SEGMENTS = 48
+#+END_SRC
+
+* Components
+#+BEGIN_SRC python :noweb yes :tangle phoneCase.py
+<<audioAmp>>
+<<camera>>
+<<powerBoost>>
+<<speaker>>
+<<screen>>
+<<screenDriver>>
+<<piZero>>
+<<battery>>
+<<gsmChip>>
+#+END_SRC 
+
+
+** Audio Amp
+
++ Pictures
+  [[./img/audioAmp.jpg]
+
++ Dimensions
+  Length : 24.34 mm
+  Width  : 15.25 mm
+  Height : 3     mm
+
++ Notes
+  The audio amp has no peculiar features sticking out of it so I'm going to describe it as a rectangular cuboid.
+
++ Item Specification
+  Picture is blurry but it seems to be the Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302.
+  Link here - https://www.adafruit.com/product/2130?gclid=CjwKCAiAhMLSBRBJEiwAlFrsTghdg5cqfxEqct82lNS0zAHgoIVcTQu9acyPF7I6W4jSUfdvVyJREhoC8QEQAvD_BwE
+
+#+NAME: audioAmp
+#+BEGIN_SRC python :tangle phoneCase.py
+def audioAmp(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  print(pos)
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+
+  audioAmp = color(Blue)(                         
+                        cube([15.25,24.34,3])    
+                        )
+
+  if flip is True:
+    audioAmp = rotate([0,180,0])(audioAmp)
+
+  if 1 <= rotate <= 3:
+    audioAmp = rotate([0,0,90*rotate])(audioAmp) 
+
+  return translate(pos)(audioAmp)
+#+END_SRC
+
+** Camera
+
++ Dimensions
+  Composite Body. Refer parts
+
++ Notes
+  Consists of a rectangular plate with the camera body sticking out upwards.
+
++ Pictures
+  [[./img/cameraA.jpg]]
+  [[./img/cameraB.jpg]]
+
++ Item Specification
+  Part seems to be the Raspberry Pi Camera Module V2
+  Link here - https://www.raspberrypi.org/products/camera-module-v2/
+
+#+NAME: camera
+#+BEGIN_SRC python :noweb yes 
+def camera(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+
+  <<cameraRectangularPlate>>
+  <<cameraBody>>
+  camera = rectangularPlate + cameraBody
+  if flip is True:
+    camera = rotate([0,180,0])(camera)
+
+  if 1 <= rotate <= 3:
+    camera = rotate([0,0,90*rotate])(camera) 
+  
+  return translate(pos)(camera)
+#+END_SRC
+*** Rectangular plate
+Length : 25.17 mm
+Width  : 23.99 mm
+Height : 2.3 mm   # 9.19 mm / 4 # This is a guesstimate from the picture.
+
+Color : Green
+
+#+NAME: cameraRectangularPlate
+#+BEGIN_SRC python
+rp_width = 23.99
+rp_length = 23.99
+rp_height = 2.3
+rectangularPlate = color([0,0.5,0])(                        
+                               down(rp_height)(left(rp_length/2-2)(back(rp_width/2)(cube([rp_length,rp_width,rp_height]))))
+                               )
+#+END_SRC
+
+*** Camera body
+
+Consists of a square extrude and circular extrude on top. Will be modeled by displaced cuboids and cylinders
+
++ Square Extrude
+  All guesstimates. 
+
+  Length : 8.4 mm
+  Width  : 8.4 mm
+  Height : 2.3 mm
+  Color  : Black
+  
++ Circular Extrude
+  All guesstimates. 
+  
+  Radius : 4.0 mm
+  Height : 2.3 mm  
+  Color  : Black
+
+#+NAME: cameraBody
+#+BEGIN_SRC python 
+  se_length = 8.4
+  se_height = 2.3
+  cameraBody = color(Black)(                        
+                           translate([-se_length/2,-se_length/2,0])(cube([se_length,se_length,2.3])),
+                           up(se_height)(cylinder(h = 2.3, r1 = 4.0, r2 = 4.0))     
+                           )
+#+END_SRC
+** Power Boost
+
++ Dimesnsions
+  Composite Body. Refer parts
+
++ Pictures
+  [[./img/powerBoostA.jpg]]
+  [[./img/powerBoostB.jpg]]
+
++ Notes
+  Consists of a rectangular plate with USB port and two components sticking out of the rectangular plate.
+
+
++ Item Specification
+  Part seems to be the PowerBoost 1000 Charger - Rechargeable 5V Lipo USB Boost @ 1A - 1000C
+  Link here - https://www.adafruit.com/product/2465?gclid=CjwKCAiAhMLSBRBJEiwAlFrsToMbnA2mLeUcWc-hK-3WdVN--c1hesR25AlnkiceXsLP9419es6pIxoCpkgQAvD_BwE
+
+#+NAME: powerBoost
+#+BEGIN_SRC python :noweb yes
+def powerBoost(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+  <<powerBoostRectangularPlate>>
+  <<powerBoostUsbPort>>
+  powerBoost = rectangularPlate + usbPort
+
+  if flip is True:
+    powerBoost = rotate([0,180,0])(powerBoost)
+
+  if 1 <= rotate <= 3:
+    powerBoost = rotate([0,0,90*rotate])(powerBoost) 
+
+  return translate(pos)(powerBoost)
+#+END_SRC
+
+*** Rectangular plate
+#+NAME: powerBoostRectangularPlate
+#+BEGIN_SRC python
+rp_length = 36.17
+rp_width = 23.00
+rp_height = 2.33
+odd_component_height = 7.33
+rectangularPlate = color([0,0.5,0])(                        
+                               back(rp_width/2)(cube([rp_length,rp_width,odd_component_height]))
+                               )
+#+END_SRC
+
+*** USB port
+USB port juts out by 8.97 mm
+#+NAME: powerBoostUsbPort
+#+BEGIN_SRC python
+usb_width = 11.7
+usb_length = 14.8
+usb_height = 5.89
+usbPort = color([0.824,0.824,0.824])(
+                                   left(8.97)(up(rp_height)(back(usb_width/2)(cube([usb_length,usb_width,usb_height]))))
+                                    )
+#+END_SRC
+
+** Speaker
+
++ Dimesnsions
+  Length : 21.62 mm
+  Width  : 18.00 mm (guesstimate)
+  Height :  7.77 mm
+
++ Pictures
+  [[./img/speakerA.jpg]]
+  [[./img/speakerB.jpg]]
+
++ Notes
+  Simple cuboid.
+
++ Item Specification
+  Item's product code is unknown
+
+#+NAME: speaker
+#+BEGIN_SRC python :noweb yes
+def speaker(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+  length = 21.62
+  width = 18.00
+  height = 7.77
+  speaker = color([0.7,0.7,0.7])(                        
+                                cube([length,width,height],center = True)
+                                )
+
+  if flip is True:
+    speaker = rotate([0,180,0])(speaker)
+
+  if 1 <= rotate <= 3:
+    speaker = rotate([0,0,90*rotate])(speaker) 
+
+  return translate(pos)(speaker)
+#+END_SRC
+
+** Screen
+
++ Dimesnsions
+  Composite Body. Refer parts
+
++ Picture
+  [[./img/screenA.jpg]]
+
+
++ Notes
+
+  IIRC, components will be removed in order to make the screen smaller and simpler to use.
+
++ Item Specification
+  Unkown item part
+#+NAME: screen
+#+BEGIN_SRC python :noweb yes
+def screen(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+  <<screenLCD>>
+  <<screenCircuitPlate>>
+  powerBoost = screenLCD + circuitPlate
+
+  if flip is True:
+    powerBoost = rotate([0,180,0])(powerBoost)
+
+  if 1 <= rotate <= 3:
+    powerBoost = rotate([0,0,90*rotate])(powerBoost) 
+
+  return translate(pos)(powerBoost)
+#+END_SRC
+
+*** LCD
+#+NAME: screenLCD
+#+BEGIN_SRC python
+lcd_length = 123.10
+lcd_width = 76.05
+lcd_height = 2.33 * 2      # guesstimate
+screenLCD = color([0.5,0.5,0])(                        
+                              cube([lcd_length,lcd_width,lcd_height])
+                              )
+#+END_SRC
+
+*** circuit plate
+#+NAME: screenCircuitPlate
+#+BEGIN_SRC python
+plate_length = 123.10
+plate_width = 76.05
+plate_height = 2.33
+circuitPlate = color([0.824,0.824,0.824])(
+                                         down(plate_height*2)(cube([plate_length,plate_width,plate_height]))
+                                         )
+#+END_SRC
+
+** Screen Driver
+
++ Dimesnsions
+  Length : 48.00 mm
+  Width  : 40.75 mm (guesstimate)
+  Height :  5.69 mm
+
++ Pictures
+  [[./img/screenDriverA.jpg]]
+  [[./img/screenDriverB.jpg]]
+
++ Notes
+  Simple cuboid.
+
++ Item Specification
+  Item appears to be RA8875 Driver Board for 40-pin TFT Touch Displays - 800x480 Max
+  Link here - https://www.adafruit.com/product/1590
+
+#+NAME: screenDriver
+#+BEGIN_SRC python :noweb yes
+def screenDriver(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+
+  length = 48.00
+  width = 40.75
+  height = 5.69
+  screenDriver = color(Blue)(                        
+                            cube([length,width,height],center = True)
+                             )
+  if flip is True:
+    screenDriver = rotate([0,180,0])(screenDriver)
+
+  if 1 <= rotate <= 3:
+    screenDriver = rotate([0,0,90*rotate])(screenDriver) 
+
+
+  return translate(pos)(screenDriver)
+#+END_SRC
+
+** Pi Zero
+
++ Dimesnsions
+  Composite Body. Refer parts
+
++ Pictures
+  [[./img/piZeroA.jpg]]
+  [[./img/piZeroB.jpg]]
+
++ Notes
+  Consists of a rectangular plate with USB ports sticking out of the rectangular plate.
+
+
++ Item Specification
+  Part seems to be the Raspberry Pi Zero W
+  Link here - https://www.adafruit.com/product/3400
+
+#+NAME: piZero
+#+BEGIN_SRC python :noweb yes
+def piZero(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+  <<PiZeroRectangularPlate>>
+  <<PiZeroUsbPort>>
+  piZero = usbPort + rectangularPlate
+
+  if flip is True:
+    piZero = rotate([0,180,0])(piZero)
+
+  if 1 <= rotate <= 3:
+    piZero = rotate([0,0,90*rotate])(piZero) 
+
+  return translate(pos)(piZero)
+#+END_SRC
+
+*** Rectangular plate
+#+NAME: PiZeroRectangularPlate
+#+BEGIN_SRC python
+rp_length = 66.00
+rp_width = 29.96
+rp_height = 1.33
+rectangularPlate = color([0,0.5,0])(                        
+                                   down(rp_height)(cube([rp_length,rp_width,rp_height]))
+                                   )
+#+END_SRC
+
+*** USB port
+#+NAME: PiZeroUsbPort
+#+BEGIN_SRC python
+usb1_width = 5.55
+usb1_length = 7.58
+usb1_height = 7.33/4
+usbPortTemplate1 = color([0.824,0.824,0.824])(
+                                             cube([usb1_length,usb1_width,usb1_height])
+                                             )
+
+usbPort1 = back(31.58-29.96)(right(37.54)(right(50.8 - 37.54)(usbPortTemplate1) + usbPortTemplate1))
+
+usb2_length = 11.24
+usb2_width = 7.58
+usb2_height = 7.33/4
+usbPortTemplate2 = color([0.824,0.824,0.824])(
+                                             cube([usb2_length,usb2_width,usb2_height])
+                                             )
+usbPort2 = back(31.58-29.96)(right(8.04)(usbPortTemplate2))
+
+usbPort = usbPort1 + usbPort2
+#+END_SRC
+
+** Battery
+
++ Dimesnsions
+  Length : 65.00 mm
+  Width  : 51.00 mm
+  Height :  8.00 mm
+
++ Pictures
+  [[./img/battery.jpg]]
+
++ Notes
+  Simple cuboid.
+
++ Item Specification
+  Item appears to be Lithium Ion Polymer Battery - 3.7v 2500mAh
+  Link here - https://www.adafruit.com/product/328
+
+#+NAME: battery
+#+BEGIN_SRC python :noweb yes
+def battery(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+  length = 65.00
+  width = 51.00
+  height = 8.00
+  battery = color([0.95,0.95,0.95])(                        
+                                   cube([length,width,height],center = True)
+                                   )
+
+  if flip is True:
+    battery = rotate([0,180,0])(battery)
+
+  if 1 <= rotate <= 3:
+    battery = rotate([0,0,90*rotate])(battery) 
+
+  return translate(pos)(battery)
+#+END_SRC
+
+** GSM chip
++ Dimesnsions
+  Length : 45.00 mm
+  Width  : 34.00 mm (guesstimate)
+  Height :  8.00 mm
+
++ Pictures
+  [[./img/GSMchip.jpg]]
+
++ Notes
+  Simple cuboid.
+
++ Item Specification
+  Item appears to be Adafruit FONA - Mini Cellular GSM Breakout uFL Version
+  Link here - https://www.adafruit.com/product/1946
+
+#+NAME: gsmChip
+#+BEGIN_SRC python :noweb yes
+def gsmChip(pos,flip,rotate):
+  if pos is None:
+    pos = [0,0,0]
+  if flip is None:
+    flip = False
+  if rotate is None:
+    rotate = 0
+  length = 45.62
+  width = 34.00
+  height = 8.00
+  gsmChip = color([0.1,0.1,0.1])(                        
+                                cube([length,width,height],center = True)
+                                )
+  if flip is True:
+    gsmChip = rotate([0,180,0])(gsmChip)
+
+  if 1 <= rotate <= 3:
+    gsmChip = rotate([0,0,90*rotate])(gsmChip) 
+
+  return translate(pos)(gsmChip)
+#+END_SRC
+
+
+
+
+
+
+* boundingBox
+
+So, it appears that openscad sucks when it comes to finding bounding boxes. So we shall find it by exporting an STL and using awk to find min/max values.
+On a seperate note, when Dharshan read this, he'll probably think I'm crazy for using bash but if it works...
+
+So we should take in some openscad object and return those values back intp python
+
+#+BEGIN_SRC python :tangle phoneCase.py
+
+def boundingBox(openscadObject):
+
+  def isanumber(a):
+
+    try:
+        float(a)
+        bool_a = True
+    except:
+        bool_a = False
+
+    return bool_a
+
+  # Create space for an openscad file
+  cwd = os.getcwd()
+  code_filepath = os.path.join(cwd, "tempOpenSCADfile.scad")
+  stl_filepath  = os.path.join(cwd, "tempOpenSCADfile.stl")
+  # Convert object to valid openSCAD code
+  code = scad_render_to_file(openscadObject,code_filepath)
+
+  # Ask openSCAD to generate STL
+  subprocess.call(["openscad","-o",stl_filepath,code_filepath])
+
+  # Time to use admesh to find min/max values
+  cmd = ['admesh',stl_filepath]
+  proc = subprocess.Popen('admesh tempOpenSCADfile.stl',shell=True,stdout=subprocess.PIPE)
+
+  for line in proc.stdout:
+    if 'Min X' in line.decode("utf-8"):
+      my_list = line.decode("utf-8").split()
+      [minX,maxX] = [float(x.replace(",", "")) for x in my_list if isanumber(x.replace(",", "")) == True]
+
+    if 'Min Y' in line.decode("utf-8"):
+      my_list = line.decode("utf-8").split()
+      [minY,maxY] = [float(x.replace(",", "")) for x in my_list if isanumber(x.replace(",", "")) == True]
+
+    if 'Min Z' in line.decode("utf-8"):
+      my_list = line.decode("utf-8").split()
+      [minZ,maxZ] = [float(x.replace(",", "")) for x in my_list if isanumber(x.replace(",", "")) == True]
+
+  return [minX,maxX,minY,maxY,minZ,maxZ]
+      
+
+#  for line in proc.stdout.readlines():
+#    if "minX" in line:
+#      print(line)
+    
+
+  
+
+
+#+END_SRC
+
+* intersection
+** for two objects
+#+BEGIN_SRC python :tangle phoneCase.py
+def intersectionAssertion(object1,object2):
+  def isanumber(a):
+
+    try:
+        float(a)
+        bool_a = True
+    except:
+        bool_a = False
+
+    return bool_a
+
+  openscadObject = object1 * object2
+
+  # Create space for an openscad file
+  cwd = os.getcwd()
+  code_filepath = os.path.join(cwd, "tempOpenSCADfile_intersection.scad")
+  png_filepath  = os.path.join(cwd, "tempOpenSCADfile_intersection.png")
+  # Convert object to valid openSCAD code
+  code = scad_render_to_file(openscadObject,code_filepath)
+
+  # Ask openSCAD to generate STL
+  subprocess.call(["openscad","-o",png_filepath,code_filepath])
+
+  # Time to use admesh to find min/max values
+  cmd = 'magick ' + png_filepath + ' -define histogram:unique-colors=true -format %c histogram:info:- | wc -l'
+  proc = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+
+  for line in proc.stdout:
+    ans = isanumber(line.decode("utf-8"))
+
+  if ans is True:
+    return True
+  else:
+    return False
+
+#+END_SRC
+** for any list of objects
+
+#+BEGIN_SRC python :tangle phoneCase.py
+def intersectionList(*args):
+
+  bool = False
+  for p in permutations(items,2):
+    bool = bool or intersectionAssertion(p[0],p[1])
+  return bool
+
+#+END_SRC
+
+
+
+
+
+
+
+* machine learning
+
+It's time for machine learning. clearly this is a terrible idea.
+
+I'll be using a basic gradient descent program to find the best position. Possible parameters to component functions are pos (of type [Int,Int,Int]), flip (of type Bool), rotate (of type Int (range(0,4).)
+We have 5 arguments for each component and we have 9 components. 45 element Clearly this is a worse idea than I thought it would be.
+
+The function we seek to minimize is boundaryBox or more specifically, a wrapper around boundary box that accepts a 45 int array.
+On the plus side, we have an intersectionList function to see if any component intersects - if they do, the solution is automatically invalid.
+
+
+#+BEGIN_SRC python :tangle no phoneCase.py
+
+def func(array):
+
+  def flipNorm(i):
+    if 0 <= i <= 0.5:
+      return (False,0)               # no penalty
+    elif 0.5 <= i <= 1:
+      return (True,0)    
+    else:
+      return (False,math.log(math.abs(i.item()))      # log-barrier penalty
+
+  def rotateNorm(i):
+    if 0 <= i < 1:
+      return (0,0)
+    elif 1 <= i < 2:
+      return (1,0)
+    elif 2 <= i < 3:
+      return (2,0)
+    elif 3<= i < 4:
+      return (3,0)
+    else:
+      return (0,math.log(math.abs(i.item()))          # log-barrier penalty
+
+  flipIndex   = range(3,45,5)
+  rotateIndex = range(4,45,5)
+
+  flip = np.vectorize(flipNorm)
+  rotate = np.vectorize(rotateNorm)
+
+  flipP = flip(array[flipIndex])
+  flipSeparate = zip(*flipP)
+  flipArray = list(flipSeperate[0])
+  flipPenalties = np.sum(list(flipSeperate[1]))
+
+  rotateP = rotate(array[rotateIndex])
+  rotateSeparate = zip(*rotateP)
+  rotateArray = list(rotateSeperate[0])
+  rotatePenalties = np.sum(list(rotateSeperate[1]))
+
+  list_of_bodies = [
+    audioAmp(    array[ 0:3 ].tolist(),flipArray[0],rotateArray[0]),
+    camera(      array[ 5:8 ].tolist(),flipArray[1],rotateArray[1]),
+    powerBoost(  array[10:13].tolist(),flipArray[2],rotateArray[2]),
+    speaker(     array[15:18].tolist(),flipArray[3],rotateArray[3]),
+    screen(      array[20:23].tolist(),flipArray[4],rotateArray[4]),
+    screenDriver(array[25:28].tolist(),flipArray[5],rotateArray[5]),
+    piZero(      array[30:33].tolist(),flipArray[6],rotateArray[6]),
+    battery(     array[35:38].tolist(),flipArray[7],rotateArray[7]),
+    gsmChip(     array[40:43].tolist(),flipArray[8],rotateArray[8])]
+
+  body = functools.reduce(lambda x,y: x + y,list_of_bodies)
+  [xmin,xmax,ymin,ymax,zmin,zmax] = boundaryBox(body)
+  volume = (xmax - xmin)*(ymax - ymin)*(zmax - zmin)
+
+  return np.sum(np.array([volume,flipPenalties,rotatePenalties]))
+#+END_SRC
+
+
+* Main function
+This is where we actually render stuff to openscad
+
+#+BEGIN_SRC python :tangle phoneCase.py
+if __name__ == '__main__':
+
+    list_of_bodies = [
+    audioAmp(     [0,10,10],None,None),   
+    camera(       [0,30,30],None,None),     
+    powerBoost(   [0,50,50],None,None),  
+    speaker(      [0,70,70],None,None),    
+    screen(       [0,90,90],None,None),   
+    screenDriver( [0,110,110],None,None),
+    piZero(       [0,130,130],None,None),      
+    battery(      [0,150,150],None,None),     
+    gsmChip(      [0,170,170],None,None)
+    ]
+
+    body = functools.reduce(lambda x,y: x + y,list_of_bodies)
+    a = body
+    #print(intersectionAssertion(a,a))
+    #print(boundingBox(a))
+    print("poop")
+    scad_render_to_file(a, file_header='$fn = %s;' % SEGMENTS, include_orig_code=False)
+#+END_SRC
