@@ -17,13 +17,13 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import AsyncImage, Image
 from kivy.graphics import *
 from apps.gallery.gallery import GalleryApp
-from apps.message.message import MessageApp
+from apps.message.message import MessageApp,TestClass
 import multiprocessing
-from kivy.uix.screenmanager import ScreenManager, Screen, SwapTransition, CardTransition
+from kivy.uix.screenmanager import ScreenManager, Screen,CardTransition, SlideTransition
 
 
 class ScreenManagement(ScreenManager):
-    ScreenManager.transition = CardTransition()
+    ScreenManager.transition = CardTransition(mode='push')
     pass
 
 
@@ -63,6 +63,8 @@ class Test(Screen):
         button.opacity = 0.5
         layout.add_widget(button)
         layout.add_widget(image)
+        tc = TestClass(layout)
+
 
 
 class HomeScreen(App):
@@ -84,7 +86,8 @@ class HomeScreen(App):
         button.opacity = 0.5
         root.add_widget(button)
         root.add_widget(image)
-        return ScreenManagement()
+        sm = ScreenManagement()
+        return sm
 
 
 class HomeButton(Button):
@@ -92,9 +95,9 @@ class HomeButton(Button):
         super(HomeButton, self).__init__(**kwargs)
 
     def on_press(self):
-        # app = MessageApp()
-        # p = multiprocessing.Process(target=app.run)
-        # p.start()
+        app = MessageApp()
+        p = multiprocessing.Process(target=app.run)
+        p.start()
         pass
 
     def on_release(self):

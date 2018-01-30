@@ -112,7 +112,8 @@
             opacity:0.1
             on_release: print("Texting")
             on_press:
-                root.manager.transition.direction = 'left'
+                root.manager.transition.direction = 'up'
+                root.manager.transition.mode = 'push'
                 root.switch()
         Image:
             source:'resources/home_UI_icons/9 Texting App.png'
@@ -130,9 +131,10 @@
         Button:
             size: 100,100
             size_hint: None, None
-            text: 'Convo'
+            text: 'Not Real'
             on_press:
-                root.manager.transition.direction = 'right'
+                root.manager.transition.direction = 'down'
+                root.manager.transition.mode = 'pop'
                 root.switch()
 <ScreenManagement>:
     Home:

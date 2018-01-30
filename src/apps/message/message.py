@@ -9,6 +9,7 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
+from kivy.uix.label import Label
 from kivy.uix.listview import ListView
 from kivy.base import runTouchApp
 from kivy.uix.screenmanager import ScreenManager,Screen, SwapTransition, CardTransition
@@ -70,7 +71,12 @@ class HomeButton(ButtonBehavior, Image):
     def on_release(self):
         pass
 
-
+class TestClass():
+    def __init__(self, lay):
+        layout = lay
+        l = Label(text='Fuck YEA')
+        layout.add_widget(l)
+        print("RAN")
 
 
 if __name__ == '__main__':
